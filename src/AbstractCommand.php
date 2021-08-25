@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace MageGen;
 
 
+use MageGen\Generator\MethodGenerator;
 use MageGen\Helper\MethodHelper;
 use MageGen\Helper\NameHelper;
 use MageGen\Writer\ModuleFile;
@@ -42,16 +43,16 @@ abstract class AbstractCommand extends Command
     protected $nameHelper;
 
     /**
-     * @var MethodHelper
+     * @var MethodGenerator
      */
-    protected $methodHelper;
+    protected $methodGenerator;
 
     public function __construct(Environment $twig, string $name = null)
     {
         parent::__construct($name);
         $this->twig         = $twig;
         $this->nameHelper   = new NameHelper();
-        $this->methodHelper = new MethodHelper();
+        $this->methodGenerator = new MethodGenerator();
     }
 
     protected function configure(): void

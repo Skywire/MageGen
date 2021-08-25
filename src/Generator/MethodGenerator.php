@@ -9,14 +9,14 @@
  */
 declare(strict_types=1);
 
-namespace MageGen\Helper;
+namespace MageGen\Generator;
 
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Method;
 use Nette\PhpGenerator\Parameter;
 
 
-class MethodHelper
+class MethodGenerator
 {
 
     public function createBeforeMethod(ClassType $newClass, string $subjectType, Method $subjectMethod): Method

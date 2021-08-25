@@ -98,13 +98,13 @@ class MakePluginCommand extends AbstractCommand
         $subjectMethod = $subjectClass->getMethod($method);
         switch ($type) {
             case 'before':
-                $this->methodHelper->createBeforeMethod($newClass, $subject, $subjectMethod);
+                $this->methodGenerator->createBeforeMethod($newClass, $subject, $subjectMethod);
                 break;
             case 'around':
-                $this->methodHelper->createAroundMethod($newClass, $subject, $subjectMethod);
+                $this->methodGenerator->createAroundMethod($newClass, $subject, $subjectMethod);
                 break;
             case 'after':
-                $this->methodHelper->createAfterMethod($newClass, $subject, $subjectMethod);
+                $this->methodGenerator->createAfterMethod($newClass, $subject, $subjectMethod);
                 break;
         }
 
