@@ -21,9 +21,12 @@ class MethodHelper
 
     public function createBeforeMethod(ClassType $newClass, string $subjectType, Method $subjectMethod): Method
     {
+        $newMethodName      = 'before' . ucfirst($subjectMethod->getName());
+        $this->assertUniqueMethod($newClass, $newMethodName);
+
         $params = $subjectMethod->getParameters();
         array_unshift($params, (new Parameter('subject'))->setType($subjectType));
-        $newMethod = $newClass->addMethod('before' . ucfirst($subjectMethod->getName()));
+        $newMethod = $newClass->addMethod($newMethodName);
         $newMethod->setParameters($params);
         $newMethod->setBody(
             sprintf(
@@ -45,10 +48,13 @@ class MethodHelper
 
     public function createAroundMethod(ClassType $newClass, string $subjectType, Method $subjectMethod): Method
     {
+        $newMethodName      = 'around' . ucfirst($subjectMethod->getName());
+        $this->assertUniqueMethod($newClass, $newMethodName);
+
         $params = $subjectMethod->getParameters();
         array_unshift($params, (new Parameter('proceed'))->setType('callable'));
         array_unshift($params, (new Parameter('subject'))->setType($subjectType));
-        $newMethod = $newClass->addMethod('around' . ucfirst($subjectMethod->getName()));
+        $newMethod = $newClass->addMethod($newMethodName);
         $newMethod->setParameters($params);
         $newMethod->setBody(
             sprintf(
@@ -70,14 +76,24 @@ class MethodHelper
 
     public function createAfterMethod(ClassType $newClass, string $subjectType, Method $subjectMethod): Method
     {
+        $newMethodName      = 'around' . ucfirst($subjectMethod->getName());
+        $this->assertUniqueMethod($newClass, $newMethodName);
+
         $params    = [
             (new Parameter('subject'))->setType($subjectType),
             (new Parameter('result'))->setType($subjectMethod->getReturnType()),
         ];
-        $newMethod = $newClass->addMethod('after' . ucfirst($subjectMethod->getName()));
+        $newMethod = $newClass->addMethod($newMethodName);
         $newMethod->setParameters($params);
         $newMethod->setBody('return $result;');
 
         return $newMethod;
+    }
+
+    protected function assertUniqueMethod(ClassType $class, string $methodName)
+    {
+        if($class->hasMethod($methodName)) {
+            throw new \RuntimeException("Class {$class->getName()} already has method $methodName");
+        }
     }
 }
