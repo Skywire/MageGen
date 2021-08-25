@@ -12,6 +12,8 @@ declare(strict_types=1);
 namespace MageGen;
 
 
+use MageGen\Helper\MethodHelper;
+use MageGen\Helper\NameHelper;
 use MageGen\Writer\ModuleFile;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -34,10 +36,22 @@ abstract class AbstractCommand extends Command
      */
     protected $writer;
 
+    /**
+     * @var NameHelper
+     */
+    protected $nameHelper;
+
+    /**
+     * @var MethodHelper
+     */
+    protected $methodHelper;
+
     public function __construct(Environment $twig, string $name = null)
     {
         parent::__construct($name);
-        $this->twig = $twig;
+        $this->twig         = $twig;
+        $this->nameHelper   = new NameHelper();
+        $this->methodHelper = new MethodHelper();
     }
 
     protected function configure(): void

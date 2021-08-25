@@ -23,5 +23,6 @@ $twig = new \Twig\Environment($loader, [
 ]);
 
 $application->add(new \MageGen\MakeModuleCommand($twig));
+$application->add(new \MageGen\MakePluginCommand($twig));
 
 $application->run();

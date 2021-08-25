@@ -26,9 +26,9 @@ class ModuleFile
         $this->magePath = $magePath;
     }
 
-    public function writeFile(string $namespace, string $module, string $path, string $filename, string $content)
+    public function writeFile(string $vendor, string $module, string $path, string $filename, string $content)
     {
-        $modulePath = implode('/', [$this->magePath, 'app/code', $namespace, $module]);
+        $modulePath = implode('/', [$this->magePath, 'app/code', $vendor, $module]);
 
         $this->createModuleDir($modulePath);
 
