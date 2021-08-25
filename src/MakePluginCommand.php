@@ -82,7 +82,14 @@ class MakePluginCommand extends AbstractCommand
         $file = new PhpFile();
         $file->setStrictTypes();
         $newNamespace = new PhpNamespace($this->nameHelper->getNamespace($classFqn));
-        $newClass     = new ClassType($this->nameHelper->getClass($classFqn));
+
+        try {
+            $newClass     = ClassType::withBodiesFrom($classFqn);
+            $newNamespace = new PhpNamespace($this->nameHelper->getNamespace($classFqn));
+            $newNamespace->add($newClass);
+        } catch (\Throwable $e) {
+            $newClass = new ClassType($this->nameHelper->getClass($classFqn));
+        }
 
         $newNamespace->add($newClass);
         $file->addNamespace($newNamespace);
