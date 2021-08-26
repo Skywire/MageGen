@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace MageGen;
 
 use MageGen\Generator\DiGenerator;
+use MageGen\Writer\ClassFile;
 use MageGen\Writer\ModuleFile;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Method;
@@ -73,7 +74,8 @@ class MakePluginCommand extends AbstractCommand
     {
         require $input->getArgument('magepath') . '/vendor/autoload.php';
 
-        $writer = $this->getWriter($input);
+        $writer      = $this->getWriter($input);
+        $classWriter = new ClassFile($input->getArgument('magepath'));
 
         $io = new SymfonyStyle($input, $output);
 
@@ -106,43 +108,44 @@ class MakePluginCommand extends AbstractCommand
                 0
             );
         }
-
-        $file = new PhpFile();
-        $file->setStrictTypes();
-        $newNamespace = new PhpNamespace($this->nameHelper->getNamespace($classFqn));
-
+        $isAmend = null;
         try {
-            $newClass     = ClassType::withBodiesFrom($classFqn);
-            $newNamespace = new PhpNamespace($this->nameHelper->getNamespace($classFqn));
-            $newNamespace->add($newClass);
+            $newClass = ClassType::withBodiesFrom($classFqn);
+            $isAmend  = true;
         } catch (\Throwable $e) {
-            $newClass = new ClassType($this->nameHelper->getClass($classFqn));
+            $isAmend = false;
         }
 
-        $newNamespace->add($newClass);
-        $file->addNamespace($newNamespace);
+        if ($isAmend) {
+            $newMethod = $this->generateMethod($subject, $method, $type, $newClass);
+            $classWriter->addMethod(
+                $classFqn,
+                $this->nameHelper->getVendor($classFqn),
+                $this->nameHelper->getModule($classFqn),
+                $this->nameHelper->getPath($classFqn),
+                $newClass->getName() . '.php',
+                (new PsrPrinter())->printMethod($newMethod)
+            );
+        } else {
+            $file = new PhpFile();
+            $file->setStrictTypes();
 
-        $subjectClass  = ClassType::from($subject);
-        $subjectMethod = $subjectClass->getMethod($method);
-        switch ($type) {
-            case 'before':
-                $this->methodGenerator->createBeforeMethod($newClass, $subject, $subjectMethod);
-                break;
-            case 'around':
-                $this->methodGenerator->createAroundMethod($newClass, $subject, $subjectMethod);
-                break;
-            case 'after':
-                $this->methodGenerator->createAfterMethod($newClass, $subject, $subjectMethod);
-                break;
+            $newNamespace = new PhpNamespace($this->nameHelper->getNamespace($classFqn));
+            $newClass     = new ClassType($this->nameHelper->getClass($classFqn));
+
+            $newNamespace->add($newClass);
+            $file->addNamespace($newNamespace);
+
+            $this->generateMethod($subject, $method, $type, $newClass);
+
+            $writer->writeFile(
+                $this->nameHelper->getVendor($classFqn),
+                $this->nameHelper->getModule($classFqn),
+                $this->nameHelper->getPath($classFqn),
+                $newClass->getName() . '.php',
+                (new PsrPrinter())->printFile($file)
+            );
         }
-
-        $writer->writeFile(
-            $this->nameHelper->getVendor($classFqn),
-            $this->nameHelper->getModule($classFqn),
-            $this->nameHelper->getPath($classFqn),
-            $newClass->getName() . '.php',
-            (new PsrPrinter())->printFile($file)
-        );
 
         $diFilePath = $this->createDiFile(
             $this->nameHelper->getVendor($classFqn),
@@ -182,5 +185,32 @@ class MakePluginCommand extends AbstractCommand
             'di.xml',
             $this->twig->render('module/di.xml.twig')
         );
+    }
+
+    /**
+     * @param           $subject
+     * @param           $method
+     * @param           $type
+     * @param ClassType $newClass
+     *
+     * @return Method
+     */
+    protected function generateMethod($subject, $method, $type, ClassType $newClass): Method
+    {
+        $subjectClass  = ClassType::from($subject);
+        $subjectMethod = $subjectClass->getMethod($method);
+        switch ($type) {
+            case 'before':
+                $newMethod = $this->methodGenerator->createBeforeMethod($newClass, $subject, $subjectMethod);
+                break;
+            case 'around':
+                $newMethod = $this->methodGenerator->createAroundMethod($newClass, $subject, $subjectMethod);
+                break;
+            case 'after':
+                $newMethod = $this->methodGenerator->createAfterMethod($newClass, $subject, $subjectMethod);
+                break;
+        }
+
+        return $newMethod;
     }
 }

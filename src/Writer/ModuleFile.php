@@ -11,21 +11,11 @@ declare(strict_types=1);
 
 namespace MageGen\Writer;
 
+
 use Symfony\Component\Filesystem\Filesystem;
 
-class ModuleFile
+class ModuleFile extends AbstractWriter
 {
-    /**
-     * @var string
-     */
-    protected $magePath;
-
-    public function __construct(string $magePath)
-    {
-        $this->fs       = new Filesystem();
-        $this->magePath = $magePath;
-    }
-
     public function writeFile(string $vendor, string $module, string $path, string $filename, string $content)
     {
         $modulePath = implode('/', [$this->magePath, 'app/code', $vendor, $module]);
@@ -34,10 +24,7 @@ class ModuleFile
 
         $finalPath = $this->getModuleRelativePath($modulePath, $path, $filename);
 
-        if (!$this->fs->exists($finalPath)) {
-            $this->fs->dumpFile($finalPath, $content);
-        }
-
+        $this->fs->dumpFile($finalPath, $content);
 
         return $finalPath;
     }
@@ -46,10 +33,5 @@ class ModuleFile
     {
         $dirs = [$modulePath, $modulePath . '/' . 'etc'];
         $this->fs->mkdir($dirs);
-    }
-
-    protected function getModuleRelativePath($modulePath, $path, $filename)
-    {
-        return implode('/', array_filter([$modulePath, ($path ?? null), $filename]));
     }
 }

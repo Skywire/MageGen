@@ -76,7 +76,7 @@ class MethodGenerator
 
     public function createAfterMethod(ClassType $newClass, string $subjectType, Method $subjectMethod): Method
     {
-        $newMethodName      = 'around' . ucfirst($subjectMethod->getName());
+        $newMethodName      = 'after' . ucfirst($subjectMethod->getName());
         $this->assertUniqueMethod($newClass, $newMethodName);
 
         $params    = [
