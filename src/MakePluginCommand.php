@@ -118,7 +118,7 @@ class MakePluginCommand extends AbstractCommand
 
         if ($isAmend) {
             $newMethod = $this->generateMethod($subject, $method, $type, $newClass);
-            $classWriter->addMethod(
+            $classWriter->writeMethod(
                 $classFqn,
                 $this->nameHelper->getVendor($classFqn),
                 $this->nameHelper->getModule($classFqn),

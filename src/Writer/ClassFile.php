@@ -15,7 +15,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class ClassFile extends AbstractWriter
 {
-    public function addMethod(
+    public function writeMethod(
         string $classFqn,
         string $vendor,
         string $module,
