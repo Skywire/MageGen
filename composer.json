@@ -5,7 +5,7 @@
         "symfony/console": "^5.3",
         "symfony/maker-bundle": "^1.33",
         "twig/twig": "^3.3",
-        "nette/php-generator": "^3.5",
+        "nette/php-generator": "v3.6.0-RC",
         "symfony/filesystem": "^5.3",
         "sabre/xml": "^2.2",
         "symfony/process": "^5.3"

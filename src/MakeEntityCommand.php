@@ -60,6 +60,8 @@ class MakeEntityCommand extends AbstractCommand
         parent::configure();
         $this->addArgument('module', InputArgument::OPTIONAL, 'Plugin subject / target');
         $this->addArgument('entity', InputArgument::OPTIONAL, 'Entity name');
+        $this->addArgument('table', InputArgument::OPTIONAL, 'DB table name');
+        $this->addArgument('id', InputArgument::OPTIONAL, 'DB ID field name');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -84,8 +86,76 @@ class MakeEntityCommand extends AbstractCommand
             $entity = $io->askQuestion(new Question('Entity'));
         }
 
+        $table = $input->getArgument('table');
+        if (!$table) {
+            $table = $io->askQuestion(new Question('Table'));
+        }
+
+        $idField = $input->getArgument('id');
+        if (!$idField) {
+            $idField = $io->askQuestion(new Question('id'));
+        }
+
+        $classFqn = implode(
+            '\\',
+            [
+                str_replace('_', '\\', $module),
+                'Model',
+                $entity,
+            ]
+        );
+
+        try {
+            $targetClass = ClassType::withBodiesFrom($classFqn);
+            $isAmend     = true;
+        } catch (\Throwable $e) {
+            $isAmend = false;
+        }
+
         $generator = new EntityGenerator();
-        $generator->makeEntity($module, $entity);
+
+        if ($isAmend) {
+        } else {
+
+            [$file, $interfaceFqn] = $generator->createInterface($classFqn);
+            $writer->writeFile(
+                $this->nameHelper->getVendor($interfaceFqn),
+                $this->nameHelper->getModule($interfaceFqn),
+                $this->nameHelper->getPath($interfaceFqn),
+                $this->nameHelper->getClass($interfaceFqn) . '.php',
+                (new PsrPrinter())->printFile($file)
+            );
+
+            [$file, $classFqn] = $generator->createEntity($module, $classFqn, $interfaceFqn);
+            $writer->writeFile(
+                $this->nameHelper->getVendor($classFqn),
+                $this->nameHelper->getModule($classFqn),
+                $this->nameHelper->getPath($classFqn),
+                $this->nameHelper->getClass($classFqn) . '.php',
+                (new PsrPrinter())->printFile($file)
+            );
+
+
+
+            [$file, $resourceFqn] = $generator->createResource($classFqn, $table, $idField);
+            $writer->writeFile(
+                $this->nameHelper->getVendor($resourceFqn),
+                $this->nameHelper->getModule($resourceFqn),
+                $this->nameHelper->getPath($resourceFqn),
+                $this->nameHelper->getClass($resourceFqn) . '.php',
+                (new PsrPrinter())->printFile($file)
+            );
+
+            [$file, $collectionFqn] = $generator->createCollection($classFqn, $resourceFqn, $idField);
+            $writer->writeFile(
+                $this->nameHelper->getVendor($collectionFqn),
+                $this->nameHelper->getModule($collectionFqn),
+                $this->nameHelper->getPath($collectionFqn),
+                $this->nameHelper->getClass($collectionFqn) . '.php',
+                (new PsrPrinter())->printFile($file)
+            );
+        }
+
 
         return self::SUCCESS;
     }

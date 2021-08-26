@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4081207739bebf1bd6fda54197250066",
+    "content-hash": "25a0c8131d9b43b2f995bf39b28f3651",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -99,21 +99,21 @@
         },
         {
             "name": "nette/php-generator",
-            "version": "v3.5.4",
+            "version": "v3.6.0-RC",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/php-generator.git",
-                "reference": "59bb35ed6e8da95854fbf7b7d47dce6156b42915"
+                "reference": "ebead7b116150e974ab3df7437953a6db80ef6e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/php-generator/zipball/59bb35ed6e8da95854fbf7b7d47dce6156b42915",
-                "reference": "59bb35ed6e8da95854fbf7b7d47dce6156b42915",
+                "url": "https://api.github.com/repos/nette/php-generator/zipball/ebead7b116150e974ab3df7437953a6db80ef6e2",
+                "reference": "ebead7b116150e974ab3df7437953a6db80ef6e2",
                 "shasum": ""
             },
             "require": {
                 "nette/utils": "^3.1.2",
-                "php": ">=7.1"
+                "php": ">=7.2 <8.2"
             },
             "require-dev": {
                 "nette/tester": "^2.0",
@@ -127,7 +127,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.5-dev"
+                    "dev-master": "3.6-dev"
                 }
             },
             "autoload": {
@@ -151,7 +151,7 @@
                     "homepage": "https://nette.org/contributors"
                 }
             ],
-            "description": "🐘 Nette PHP Generator: generates neat PHP code for you. Supports new PHP 8.0 features.",
+            "description": "🐘 Nette PHP Generator: generates neat PHP code for you. Supports new PHP 8.1 features.",
             "homepage": "https://nette.org",
             "keywords": [
                 "code",
@@ -159,7 +159,7 @@
                 "php",
                 "scaffolding"
             ],
-            "time": "2021-07-05T12:02:42+00:00"
+            "time": "2021-08-25T11:08:16+00:00"
         },
         {
             "name": "nette/utils",
@@ -2988,7 +2988,9 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "nette/php-generator": 5
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

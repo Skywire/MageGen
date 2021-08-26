@@ -108,7 +108,7 @@ class MakePluginCommand extends AbstractCommand
                 0
             );
         }
-        $isAmend = null;
+
         try {
             $newClass = ClassType::withBodiesFrom($classFqn);
             $isAmend  = true;
