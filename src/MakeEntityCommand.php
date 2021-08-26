@@ -48,11 +48,17 @@ class MakeEntityCommand extends AbstractCommand
      */
     protected $diGenerator;
 
+    /**
+     * @var EntityGenerator
+     */
+    protected $entityGenerator;
+
     public function __construct(Environment $twig, string $name = null)
     {
         parent::__construct($twig, $name);
 
         $this->diGenerator = new DiGenerator();
+        $this->entityGenerator = new EntityGenerator();
     }
 
     protected function configure(): void
@@ -112,12 +118,11 @@ class MakeEntityCommand extends AbstractCommand
             $isAmend = false;
         }
 
-        $generator = new EntityGenerator();
 
         if ($isAmend) {
         } else {
 
-            [$file, $interfaceFqn] = $generator->createInterface($classFqn);
+            [$file, $interfaceFqn] = $this->entityGenerator->createInterface($classFqn);
             $writer->writeFile(
                 $this->nameHelper->getVendor($interfaceFqn),
                 $this->nameHelper->getModule($interfaceFqn),
@@ -126,7 +131,7 @@ class MakeEntityCommand extends AbstractCommand
                 (new PsrPrinter())->printFile($file)
             );
 
-            [$file, $classFqn] = $generator->createEntity($module, $classFqn, $interfaceFqn);
+            [$file, $classFqn] = $this->entityGenerator->createEntity($module, $classFqn, $interfaceFqn);
             $writer->writeFile(
                 $this->nameHelper->getVendor($classFqn),
                 $this->nameHelper->getModule($classFqn),
@@ -135,9 +140,7 @@ class MakeEntityCommand extends AbstractCommand
                 (new PsrPrinter())->printFile($file)
             );
 
-
-
-            [$file, $resourceFqn] = $generator->createResource($classFqn, $table, $idField);
+            [$file, $resourceFqn] = $this->entityGenerator->createResource($classFqn, $table, $idField);
             $writer->writeFile(
                 $this->nameHelper->getVendor($resourceFqn),
                 $this->nameHelper->getModule($resourceFqn),
@@ -146,7 +149,7 @@ class MakeEntityCommand extends AbstractCommand
                 (new PsrPrinter())->printFile($file)
             );
 
-            [$file, $collectionFqn] = $generator->createCollection($classFqn, $resourceFqn, $idField);
+            [$file, $collectionFqn] = $this->entityGenerator->createCollection($classFqn, $resourceFqn, $idField);
             $writer->writeFile(
                 $this->nameHelper->getVendor($collectionFqn),
                 $this->nameHelper->getModule($collectionFqn),
