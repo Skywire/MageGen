@@ -33,7 +33,11 @@ class ModuleFile
         $this->createModuleDir($modulePath);
 
         $finalPath = $this->getModuleRelativePath($modulePath, $path, $filename);
-        $this->fs->dumpFile($finalPath, $content);
+
+        if (!$this->fs->exists($finalPath)) {
+            $this->fs->dumpFile($finalPath, $content);
+        }
+
 
         return $finalPath;
     }

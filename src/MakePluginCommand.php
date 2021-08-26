@@ -11,12 +11,14 @@ declare(strict_types=1);
 
 namespace MageGen;
 
+use MageGen\Generator\DiGenerator;
+use MageGen\Writer\ModuleFile;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Method;
 use Nette\PhpGenerator\Parameter;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PhpNamespace;
-use Nette\PhpGenerator\Printer;
+use Nette\PhpGenerator\PsrPrinter;
 use Nette\PhpGenerator\Traits\NameAware;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -39,6 +41,19 @@ class MakePluginCommand extends AbstractCommand
 
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'make:plugin';
+
+    /**
+     * @var DiGenerator
+     */
+    protected $diGenerator;
+
+    public function __construct(Environment $twig, string $name = null)
+    {
+        parent::__construct($twig, $name);
+
+        $this->diGenerator = new DiGenerator();
+    }
+
 
     protected function configure(): void
     {
@@ -98,13 +113,13 @@ class MakePluginCommand extends AbstractCommand
         $subjectMethod = $subjectClass->getMethod($method);
         switch ($type) {
             case 'before':
-                $this->methodGenerator->createBeforeMethod($newClass, $subject, $subjectMethod);
+                $newMethod = $this->methodGenerator->createBeforeMethod($newClass, $subject, $subjectMethod);
                 break;
             case 'around':
-                $this->methodGenerator->createAroundMethod($newClass, $subject, $subjectMethod);
+                $newMethod = $this->methodGenerator->createAroundMethod($newClass, $subject, $subjectMethod);
                 break;
             case 'after':
-                $this->methodGenerator->createAfterMethod($newClass, $subject, $subjectMethod);
+                $newMethod = $this->methodGenerator->createAfterMethod($newClass, $subject, $subjectMethod);
                 break;
         }
 
@@ -113,9 +128,40 @@ class MakePluginCommand extends AbstractCommand
             $this->nameHelper->getModule($classFqn),
             $this->nameHelper->getPath($classFqn),
             $newClass->getName() . '.php',
-            (new Printer())->printFile($file)
+            (new PsrPrinter())->printFile($file)
         );
 
+        $diFilePath = $this->createDiFile(
+            $this->nameHelper->getVendor($classFqn),
+            $this->nameHelper->getModule($classFqn),
+            $writer
+        );
+
+        $this->diGenerator->addPlugin($diFilePath, $subject, $classFqn, $type);
+
         return Command::SUCCESS;
+    }
+
+    /**
+     * Create a file if it doesn't exist and return the path
+     *
+     * @param string     $vendor
+     * @param string     $module
+     * @param ModuleFile $writer
+     *
+     * @return string
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     */
+    protected function createDiFile(string $vendor, string $module, ModuleFile $writer): string
+    {
+        return $writer->writeFile(
+            $vendor,
+            $module,
+            'etc',
+            'di.xml',
+            $this->twig->render('module/di.xml.twig')
+        );
     }
 }
