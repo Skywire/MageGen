@@ -62,6 +62,11 @@ class MakePluginCommand extends AbstractCommand
         $this->addArgument('method', InputArgument::OPTIONAL, 'Subject method');
         $this->addArgument('class', InputArgument::OPTIONAL, 'Plugin class name');
         $this->addArgument('type', InputArgument::OPTIONAL, "before, around, after");
+        $this->addArgument(
+            'area',
+            InputArgument::OPTIONAL,
+            "global, frontend, adminhtml, webapi_rest, webapi_soap, crontab"
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -93,6 +98,14 @@ class MakePluginCommand extends AbstractCommand
         if (!$type) {
             $type = $io->choice('Type', ['before', 'around', 'after']);
         }
+        $area = $input->getArgument('area');
+        if (!$area) {
+            $area = $io->choice(
+                'Area',
+                ['global', 'frontend', 'adminhtml', 'webapi_rest', 'webapi_soap', 'crontab'],
+                0
+            );
+        }
 
         $file = new PhpFile();
         $file->setStrictTypes();
@@ -113,13 +126,13 @@ class MakePluginCommand extends AbstractCommand
         $subjectMethod = $subjectClass->getMethod($method);
         switch ($type) {
             case 'before':
-                $newMethod = $this->methodGenerator->createBeforeMethod($newClass, $subject, $subjectMethod);
+                $this->methodGenerator->createBeforeMethod($newClass, $subject, $subjectMethod);
                 break;
             case 'around':
-                $newMethod = $this->methodGenerator->createAroundMethod($newClass, $subject, $subjectMethod);
+                $this->methodGenerator->createAroundMethod($newClass, $subject, $subjectMethod);
                 break;
             case 'after':
-                $newMethod = $this->methodGenerator->createAfterMethod($newClass, $subject, $subjectMethod);
+                $this->methodGenerator->createAfterMethod($newClass, $subject, $subjectMethod);
                 break;
         }
 
@@ -134,6 +147,7 @@ class MakePluginCommand extends AbstractCommand
         $diFilePath = $this->createDiFile(
             $this->nameHelper->getVendor($classFqn),
             $this->nameHelper->getModule($classFqn),
+            $area,
             $writer
         );
 
@@ -154,12 +168,17 @@ class MakePluginCommand extends AbstractCommand
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      */
-    protected function createDiFile(string $vendor, string $module, ModuleFile $writer): string
+    protected function createDiFile(string $vendor, string $module, string $area, ModuleFile $writer): string
     {
+        $etcPath = 'etc';
+        if ($area !== 'global') {
+            $etcPath .= '/' . $area;
+        }
+
         return $writer->writeFile(
             $vendor,
             $module,
-            'etc',
+            $etcPath,
             'di.xml',
             $this->twig->render('module/di.xml.twig')
         );
