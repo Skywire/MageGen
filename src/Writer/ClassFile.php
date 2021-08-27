@@ -24,13 +24,17 @@ class ClassFile extends AbstractWriter
 
         $reflectionClass = new \ReflectionClass($classFqn);
 
-        $methods          = $reflectionClass->getMethods();
-        $lastMethod       = array_pop($methods);
-        $reflectionMethod = new \ReflectionMethod($classFqn, $lastMethod->getName());
+        $methods = $reflectionClass->getMethods();
+        $file    = new \SplFileObject($finalPath, 'ra+');
 
-        $file = new \SplFileObject($finalPath, 'ra+');
+        if (!empty($methods)) {
+            $lastMethod       = array_shift($methods);
+            $reflectionMethod = new \ReflectionMethod($classFqn, $lastMethod->getName());
+            $endLine = $reflectionMethod->getStartLine() - 3;
+        } else {
+            $endLine = $reflectionClass->getEndLine() - 2;
+        }
 
-        $endLine = $reflectionMethod->getEndLine() - 1;
         $file->seek($endLine);
         $position = $file->ftell();
         $file     = null;
@@ -48,8 +52,8 @@ class ClassFile extends AbstractWriter
 
         // Does reflection allow me to get property line numbers? Does it hell.
         // Properties go before methods so let's inject before the first method instead.
-        $methods          = $reflectionClass->getMethods();
-        if(!empty($methods)) {
+        $methods = $reflectionClass->getMethods();
+        if (!empty($methods)) {
             $firstMethod      = array_shift($methods);
             $reflectionMethod = new \ReflectionMethod($classFqn, $firstMethod->getName());
 

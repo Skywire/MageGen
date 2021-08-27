@@ -129,18 +129,28 @@ class MakeEntityCommand extends AbstractCommand
 
             $io->title('Class exists, adding new properties');
 
-            $propertyName = $io->askQuestion(new Question('Property'));
-            $propertyType = $io->askQuestion(new Question('type', 'string'));
+//            $propertyName = $io->askQuestion(new Question('Property'));
+//            $propertyType = $io->askQuestion(new Question('type', 'string'));
+            $propertyName = 'firstname';
+            $propertyType = 'string';
 
             $newProperty = (new Property($propertyName))->setType($propertyType)->setProtected();
             $classWriter->writeProperty($classFqn, (new PropertyPrinter())->printProperty($newProperty));
+
+            $getter = new Method("get" . ucfirst($propertyName));
+            $getter->setPublic();
+            $getter->addParameter($propertyName)->setType($propertyType);
 
             // TODO Add getter / setter to interface
             try {
                 $interfaceFqn = $this->entityGenerator->entityFqnToInterfaceFqn($classFqn);
                 ClassType::withBodiesFrom($interfaceFqn);
+                $getter->setBody(null);
+
+                $classWriter->writeMethod($interfaceFqn, (new PsrPrinter())->printMethod($getter));
             } catch (\Throwable $e) {
                 // interface is optional
+                throw $e;
             }
             // TODO Add getter / setter to class
         } else {
