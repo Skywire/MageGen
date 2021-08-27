@@ -14,12 +14,16 @@ namespace MageGen;
 use MageGen\Generator\DiGenerator;
 use MageGen\Generator\EntityGenerator;
 use MageGen\Helper\ModuleHelper;
+use MageGen\Printer\PropertyPrinter;
+use MageGen\Writer\AbstractWriter;
+use MageGen\Writer\ClassFile;
 use MageGen\Writer\ModuleFile;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Method;
 use Nette\PhpGenerator\Parameter;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PhpNamespace;
+use Nette\PhpGenerator\Property;
 use Nette\PhpGenerator\PsrPrinter;
 use Nette\PhpGenerator\Traits\NameAware;
 use Symfony\Component\Console\Command\Command;
@@ -57,7 +61,7 @@ class MakeEntityCommand extends AbstractCommand
     {
         parent::__construct($twig, $name);
 
-        $this->diGenerator = new DiGenerator();
+        $this->diGenerator     = new DiGenerator();
         $this->entityGenerator = new EntityGenerator();
     }
 
@@ -121,17 +125,25 @@ class MakeEntityCommand extends AbstractCommand
         }
 
         if ($isAmend) {
+            $classWriter = new ClassFile($input->getArgument('magepath'));
+
             $io->title('Class exists, adding new properties');
-            // TODO Prompt for new property
 
-            $entity = $io->askQuestion(new Question('Property'));
-            // TODO Add property to interface
+            $propertyName = $io->askQuestion(new Question('Property'));
+            $propertyType = $io->askQuestion(new Question('type', 'string'));
 
-            // TODO add property to entity class
+            $newProperty = (new Property($propertyName))->setType($propertyType)->setProtected();
+            $classWriter->writeProperty($classFqn, (new PropertyPrinter())->printProperty($newProperty));
 
-            // TODO Add getter / setter
+            // TODO Add getter / setter to interface
+            try {
+                $interfaceFqn = $this->entityGenerator->entityFqnToInterfaceFqn($classFqn);
+                ClassType::withBodiesFrom($interfaceFqn);
+            } catch (\Throwable $e) {
+                // interface is optional
+            }
+            // TODO Add getter / setter to class
         } else {
-
             [$file, $interfaceFqn] = $this->entityGenerator->createInterface($classFqn);
             $writer->writeFile(
                 $this->nameHelper->getVendor($interfaceFqn),

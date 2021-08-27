@@ -120,10 +120,6 @@ class MakePluginCommand extends AbstractCommand
             $newMethod = $this->generateMethod($subject, $method, $type, $newClass);
             $classWriter->writeMethod(
                 $classFqn,
-                $this->nameHelper->getVendor($classFqn),
-                $this->nameHelper->getModule($classFqn),
-                $this->nameHelper->getPath($classFqn),
-                $newClass->getName() . '.php',
                 (new PsrPrinter())->printMethod($newMethod)
             );
         } else {

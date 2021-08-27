@@ -15,6 +15,7 @@ use MageGen\Helper\NameHelper;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpFile;
 use Nette\PhpGenerator\PhpNamespace;
+use Nette\PhpGenerator\Property;
 
 
 class EntityGenerator
@@ -29,12 +30,9 @@ class EntityGenerator
         $this->nameHelper = new NameHelper();
     }
 
-    public function createInterface(string $entityFqn)
+    public function entityFqnToInterfaceFqn(string $entityFqn)
     {
-        $file = new PhpFile();
-        $file->setStrictTypes();
-
-        $interfaceFqn = implode(
+        return implode(
             '\\',
             [
                 $this->nameHelper->getVendor($entityFqn),
@@ -44,6 +42,14 @@ class EntityGenerator
                 $this->nameHelper->getClass($entityFqn) . 'Interface',
             ]
         );
+    }
+
+    public function createInterface(string $entityFqn)
+    {
+        $file = new PhpFile();
+        $file->setStrictTypes();
+
+        $interfaceFqn = $this->entityFqnToInterfaceFqn($entityFqn);
         $newNamespace = new PhpNamespace($this->nameHelper->getNamespace($interfaceFqn));
         $class        = ClassType::interface($this->nameHelper->getClass($interfaceFqn));
 

@@ -11,21 +11,16 @@ declare(strict_types=1);
 
 namespace MageGen\Writer;
 
+use MageGen\Helper\NameHelper;
 use Symfony\Component\Filesystem\Filesystem;
 
 class ClassFile extends AbstractWriter
 {
     public function writeMethod(
         string $classFqn,
-        string $vendor,
-        string $module,
-        string $path,
-        string $filename,
         string $content
     ) {
-        $modulePath = implode('/', [$this->magePath, 'app/code', $vendor, $module]);
-
-        $finalPath = $this->getModuleRelativePath($modulePath, $path, $filename);
+        $finalPath = $this->fqnToPath($classFqn);
 
         $reflectionClass = new \ReflectionClass($classFqn);
 
@@ -38,14 +33,66 @@ class ClassFile extends AbstractWriter
         $endLine = $reflectionMethod->getEndLine() - 1;
         $file->seek($endLine);
         $position = $file->ftell();
-        $file = null;
+        $file     = null;
 
         $this->injectData($finalPath, "\n\t" . $content, $position);
+    }
+
+    public function writeProperty(
+        string $classFqn,
+        string $content
+    ) {
+        $finalPath = $this->fqnToPath($classFqn);
+
+        $reflectionClass = new \ReflectionClass($classFqn);
+
+        // Does reflection allow me to get property line numbers? Does it hell.
+        // Properties go before methods so let's inject before the first method instead.
+        $methods          = $reflectionClass->getMethods();
+        if(!empty($methods)) {
+            $firstMethod      = array_shift($methods);
+            $reflectionMethod = new \ReflectionMethod($classFqn, $firstMethod->getName());
+
+            $startLine = $reflectionMethod->getStartLine() - 3;
+        } else {
+            $startLine = $reflectionClass->getEndLine() - 2;
+        }
+
+        $file = new \SplFileObject($finalPath, 'ra+');
+        $file->seek($startLine);
+        $position = $file->ftell();
+        $file     = null;
+
+        $this->injectData($finalPath, "\t" . $content, $position);
+    }
+
+    protected function fqnToPath(string $classFqn)
+    {
+        $helper = new NameHelper();
+
+        $modulePath = implode(
+            '/',
+            [
+                $this->magePath,
+                'app/code',
+                $helper->getVendor($classFqn),
+                $helper->getModule(
+                    $classFqn
+                ),
+            ]
+        );
+
+        $finalPath = $this->getModuleRelativePath(
+            $modulePath,
+            $helper->getPath($classFqn),
+            $helper->getClass($classFqn) . '.php'
+        );
 
         return $finalPath;
     }
 
-    protected function injectData($file, $data, $position) {
+    protected function injectData($file, $data, $position)
+    {
         $fpFile = fopen($file, "rw+");
         $fpTemp = fopen('php://temp', "rw+");
 
