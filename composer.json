@@ -2,13 +2,13 @@
     "name": "skywire/magegen",
     "type": "project",
     "require": {
-        "symfony/console": "^5.3",
-        "symfony/maker-bundle": "^1.33",
+        "symfony/console": "^4.4",
         "twig/twig": "^3.3",
         "nette/php-generator": "v3.6.0-RC",
-        "symfony/filesystem": "^5.3",
+        "symfony/filesystem": "^5.2",
         "sabre/xml": "^2.2",
-        "symfony/process": "^5.3"
+        "symfony/process": "^4.4",
+        "nikic/php-parser": "^4.12"
     },
     "license": "OSL3.0",
     "authors": [

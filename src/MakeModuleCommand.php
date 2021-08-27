@@ -83,6 +83,6 @@ class MakeModuleCommand extends AbstractCommand
 
         $io->success('Module created');
 
-        return Command::SUCCESS;
+        return 0;
     }
 }

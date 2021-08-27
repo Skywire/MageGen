@@ -156,7 +156,7 @@ class MakePluginCommand extends AbstractCommand
 
         $this->diGenerator->addPlugin($diFilePath, $subject, $classFqn, $type);
 
-        return Command::SUCCESS;
+        return 0;
     }
 
     /**

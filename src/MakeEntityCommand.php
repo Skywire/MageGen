@@ -72,6 +72,8 @@ class MakeEntityCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        require $input->getArgument('magepath') . '/vendor/autoload.php';
+
         $writer       = $this->getWriter($input);
         $moduleHelper = new ModuleHelper();
         $io           = new SymfonyStyle($input, $output);
@@ -122,7 +124,7 @@ class MakeEntityCommand extends AbstractCommand
             $io->title('Class exists, adding new properties');
             // TODO Prompt for new property
 
-//            $entity = $io->askQuestion(new Question('Property'));
+            $entity = $io->askQuestion(new Question('Property'));
             // TODO Add property to interface
 
             // TODO add property to entity class
@@ -168,6 +170,6 @@ class MakeEntityCommand extends AbstractCommand
         }
 
 
-        return self::SUCCESS;
+        return 0;
     }
 }
