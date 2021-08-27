@@ -23,14 +23,17 @@ class ClassFile extends AbstractWriter
         $finalPath = $this->fqnToPath($classFqn);
 
         $reflectionClass = new \ReflectionClass($classFqn);
+        $methods         = $this->getClassMethods($reflectionClass);
 
-        $methods = $reflectionClass->getMethods();
-        $file    = new \SplFileObject($finalPath, 'ra+');
+        $file = new \SplFileObject($finalPath, 'ra+');
 
         if (!empty($methods)) {
-            $lastMethod       = array_shift($methods);
+            $lastMethod       = array_pop($methods);
             $reflectionMethod = new \ReflectionMethod($classFqn, $lastMethod->getName());
-            $endLine = $reflectionMethod->getStartLine() - 3;
+            $endLine          = $reflectionMethod->getEndLine();
+            if($reflectionMethod->isAbstract()) {
+                $endLine -= 1;
+            }
         } else {
             $endLine = $reflectionClass->getEndLine() - 2;
         }
@@ -39,7 +42,17 @@ class ClassFile extends AbstractWriter
         $position = $file->ftell();
         $file     = null;
 
-        $this->injectData($finalPath, "\n\t" . $content, $position);
+        $this->injectData($finalPath, "\t" . $content, $position);
+    }
+
+    protected function getClassMethods(\ReflectionClass $class): array
+    {
+        return array_filter(
+            $class->getMethods(),
+            static function (\ReflectionMethod $method) use ($class) {
+                return $method->class === $class->name;
+            }
+        );
     }
 
     public function writeProperty(
@@ -49,10 +62,8 @@ class ClassFile extends AbstractWriter
         $finalPath = $this->fqnToPath($classFqn);
 
         $reflectionClass = new \ReflectionClass($classFqn);
+        $methods         = $this->getClassMethods($reflectionClass);
 
-        // Does reflection allow me to get property line numbers? Does it hell.
-        // Properties go before methods so let's inject before the first method instead.
-        $methods = $reflectionClass->getMethods();
         if (!empty($methods)) {
             $firstMethod      = array_shift($methods);
             $reflectionMethod = new \ReflectionMethod($classFqn, $firstMethod->getName());

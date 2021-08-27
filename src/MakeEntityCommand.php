@@ -129,30 +129,39 @@ class MakeEntityCommand extends AbstractCommand
 
             $io->title('Class exists, adding new properties');
 
-//            $propertyName = $io->askQuestion(new Question('Property'));
-//            $propertyType = $io->askQuestion(new Question('type', 'string'));
-            $propertyName = 'firstname';
-            $propertyType = 'string';
+            $propertyName = $io->askQuestion(new Question('Property'));
+            $propertyType = $io->askQuestion(new Question('type', 'string'));
 
             $newProperty = (new Property($propertyName))->setType($propertyType)->setProtected();
             $classWriter->writeProperty($classFqn, (new PropertyPrinter())->printProperty($newProperty));
 
             $getter = new Method("get" . ucfirst($propertyName));
             $getter->setPublic();
-            $getter->addParameter($propertyName)->setType($propertyType);
 
-            // TODO Add getter / setter to interface
+            $setter = new Method("set" . ucfirst($propertyName));
+            $setter->setPublic();
+            $setter->addParameter($propertyName)->setType($propertyType);
+
+            // Add getter / setter to interface
             try {
                 $interfaceFqn = $this->entityGenerator->entityFqnToInterfaceFqn($classFqn);
                 ClassType::withBodiesFrom($interfaceFqn);
-                $getter->setBody(null);
 
+                $setter->setBody(null);
+                $classWriter->writeMethod($interfaceFqn, (new PsrPrinter())->printMethod($setter));
+                $getter->setBody(null);
                 $classWriter->writeMethod($interfaceFqn, (new PsrPrinter())->printMethod($getter));
             } catch (\Throwable $e) {
                 // interface is optional
                 throw $e;
             }
-            // TODO Add getter / setter to class
+
+            // Add getter / setter to class
+            $setter->setBody(sprintf('return $this->setData(%s, $%s);', "'$propertyName'", $propertyName));
+            $classWriter->writeMethod($classFqn, (new PsrPrinter())->printMethod($setter));
+
+            $getter->setBody(sprintf('return $this->getData(%s);', "'$propertyName'"));
+            $classWriter->writeMethod($classFqn, (new PsrPrinter())->printMethod($getter));
         } else {
             [$file, $interfaceFqn] = $this->entityGenerator->createInterface($classFqn);
             $writer->writeFile(
