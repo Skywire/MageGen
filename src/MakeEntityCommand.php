@@ -118,8 +118,16 @@ class MakeEntityCommand extends AbstractCommand
             $isAmend = false;
         }
 
-
         if ($isAmend) {
+            $io->title('Class exists, adding new properties');
+            // TODO Prompt for new property
+
+//            $entity = $io->askQuestion(new Question('Property'));
+            // TODO Add property to interface
+
+            // TODO add property to entity class
+
+            // TODO Add getter / setter
         } else {
 
             [$file, $interfaceFqn] = $this->entityGenerator->createInterface($classFqn);
