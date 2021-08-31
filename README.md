@@ -16,7 +16,7 @@ chmod +x magegen.php
 ### Download the phar
 
 ```
-curl -o -L magegen.phar https://github.com/Skywire/MageGen/releases/latest/download/magegen.phar
+curl -o magegen.phar -L https://github.com/Skywire/MageGen/releases/latest/download/magegen.phar
 chmod +x magegen.phar
 sudo mv magegen.phar /usr/local/bin/magegen    
 ```
