@@ -170,7 +170,7 @@ class MakeEntityCommand extends AbstractCommand
 
             $idField = $input->getArgument('id');
             if (!$idField) {
-                $idField = $io->askQuestion(new Question('id'));
+                $idField = $io->askQuestion(new Question('id', 'entity_id'));
             }
 
             [$file, $interfaceFqn] = $this->entityGenerator->createInterface($classFqn);

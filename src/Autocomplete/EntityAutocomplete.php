@@ -44,6 +44,9 @@ class EntityAutocomplete
 
     protected function rsearch($dir, $pattern)
     {
+        if(!is_readable($dir)) {
+            return [];
+        }
         $dir   = new RecursiveDirectoryIterator($dir);
         $ite   = new RecursiveIteratorIterator($dir);
         $files = new RegexIterator($ite, $pattern, RegexIterator::MATCH);
