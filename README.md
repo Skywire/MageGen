@@ -15,7 +15,9 @@ chmod +x magegen.php
 
 ### Commands
 
-All commands expect magepath as the first argument, this is the path to the magento 2 installation
+All commands expect magepath as the first argument this is the path to the magento 2 installation.
+
+If omitted the current working directory will be used.
 
 #### Make Module
 
@@ -36,7 +38,8 @@ You can update an existing plugin to add new methods.
 
 * subject - The plugin subject class or interface, e.g \Magento\Checkout\Api\PaymentInformationManagementInterface
 * method - The plugin subject method e.g. savePaymentInformationAndPlaceOrder
-* class - The fully qualified class name for your plugin class, e.g. \MyCompany\MyModule\Plugin\Model\PaymentInformationPlugin
+* class - The fully qualified class name for your plugin class, e.g.
+  \MyCompany\MyModule\Plugin\Model\PaymentInformationPlugin
 * type - The plugin type, before, around, after.
 * area - The plugin area, global, frontend, adminhtml, etc.
 
@@ -44,7 +47,8 @@ You can update an existing plugin to add new methods.
 
 Create or update a CRUD entity model, with API interface, resource model and collection
 
-When updating a model you can add new properties, this will add the getters and setters to the interface and the model class.
+When updating a model you can add new properties, this will add the getters and setters to the interface and the model
+class.
 
 `./magegen.php make:entity <magepath> [<module> [<entity> [<table> [<id>]]]]`
 

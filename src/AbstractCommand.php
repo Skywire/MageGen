@@ -57,7 +57,7 @@ abstract class AbstractCommand extends Command
 
     protected function configure(): void
     {
-        $this->addArgument('magepath', InputArgument::REQUIRED);
+        $this->addArgument('magepath', InputArgument::OPTIONAL, '', getcwd());
     }
 
     protected function getWriter(InputInterface $input)
