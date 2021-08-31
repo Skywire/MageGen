@@ -72,10 +72,10 @@ class MakePluginCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        require $input->getArgument('magepath') . '/vendor/autoload.php';
+        require $input->getOption('magepath') . '/vendor/autoload.php';
 
         $writer      = $this->getWriter($input);
-        $classWriter = new ClassFile($input->getArgument('magepath'));
+        $classWriter = new ClassFile($input->getOption('magepath'));
 
         $io = new SymfonyStyle($input, $output);
 

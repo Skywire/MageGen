@@ -72,7 +72,7 @@ class MakeSchemaCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        require $input->getArgument('magepath') . '/vendor/autoload.php';
+        require $input->getOption('magepath') . '/vendor/autoload.php';
 
         $io = new SymfonyStyle($input, $output);
 
@@ -81,7 +81,7 @@ class MakeSchemaCommand extends AbstractCommand
             $module = $io->askQuestion(
                 (new Question('Module'))->setAutocompleterValues(
                     (new ModuleAutocomplete())->getAutocompleteValues(
-                        $input->getArgument('magepath')
+                        $input->getOption('magepath')
                     )
                 )
             );
@@ -93,7 +93,7 @@ class MakeSchemaCommand extends AbstractCommand
             $entity = $io->askQuestion(
                 (new Question(sprintf('Entity %s', $prefix)))->setAutocompleterValues(
                     (new EntityAutocomplete())->getAutocompleteValues(
-                        $input->getArgument('magepath'),
+                        $input->getOption('magepath'),
                         $module
                     )
                 )

@@ -79,7 +79,7 @@ class MakeEntityCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        require $input->getArgument('magepath') . '/vendor/autoload.php';
+        require $input->getOption('magepath') . '/vendor/autoload.php';
 
         $writer = $this->getWriter($input);
         $io     = new SymfonyStyle($input, $output);
@@ -89,7 +89,7 @@ class MakeEntityCommand extends AbstractCommand
             $module = $io->askQuestion(
                 (new Question('Module'))->setAutocompleterValues(
                     (new ModuleAutocomplete())->getAutocompleteValues(
-                        $input->getArgument('magepath')
+                        $input->getOption('magepath')
                     )
                 )
             );
@@ -101,7 +101,7 @@ class MakeEntityCommand extends AbstractCommand
             $entity = $io->askQuestion(
                 (new Question(sprintf('Entity %s', $prefix)))->setAutocompleterValues(
                     (new EntityAutocomplete())->getAutocompleteValues(
-                        $input->getArgument('magepath'),
+                        $input->getOption('magepath'),
                         $module
                     )
                 )
@@ -125,7 +125,7 @@ class MakeEntityCommand extends AbstractCommand
         }
 
         if ($isAmend) {
-            $classWriter = new ClassFile($input->getArgument('magepath'));
+            $classWriter = new ClassFile($input->getOption('magepath'));
 
             $io->title('Class exists, adding new properties');
 

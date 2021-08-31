@@ -19,6 +19,7 @@ use MageGen\Writer\ModuleFile;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Twig\Environment;
 
 
@@ -57,11 +58,11 @@ abstract class AbstractCommand extends Command
 
     protected function configure(): void
     {
-        $this->addArgument('magepath', InputArgument::OPTIONAL, '', getcwd());
+        $this->addOption('magepath', '-m', InputOption::VALUE_REQUIRED, 'Path to Magento installation', getcwd());
     }
 
     protected function getWriter(InputInterface $input)
     {
-        return new ModuleFile($input->getArgument('magepath'));
+        return new ModuleFile($input->getOption('magepath'));
     }
 }

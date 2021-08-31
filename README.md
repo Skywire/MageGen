@@ -16,24 +16,24 @@ chmod +x magegen.php
 ### Download the phar
 
 ```
-curl -o magegen.phar https://github.com/Skywire/MageGen/releases/latest/download/magegen.phar
+curl -o -L magegen.phar https://github.com/Skywire/MageGen/releases/latest/download/magegen.phar
 chmod +x magegen.phar
 sudo mv magegen.phar /usr/local/bin/magegen    
 ```
 
 ## Usage
 
+Run from inside a Magento 2 project directory.
+
+`magegen --help`
+
 ### Commands
-
-All commands expect magepath as the first argument this is the path to the magento 2 installation.
-
-If omitted the current working directory will be used.
 
 #### Make Module
 
 Create a new Magento module with registration and etc/module.xml files
 
-`./magegen.php make:module <magepath> [<namespace> [<module>]]`
+`./magegen.php make:module [<namespace> [<module>]]`
 
 * vendor - The vendor namespace e.g MyCompanyName
 * module - The module name, e.g MyModuleName
@@ -44,7 +44,7 @@ Create or update a plugin class.
 
 You can update an existing plugin to add new methods.
 
-`./magegen.php make:plugin <magepath> [<subject> [<method> [<class> [<type> [<area>]]]]]`
+`./magegen.php make:plugin [<subject> [<method> [<class> [<type> [<area>]]]]]`
 
 * subject - The plugin subject class or interface, e.g \Magento\Checkout\Api\PaymentInformationManagementInterface
 * method - The plugin subject method e.g. savePaymentInformationAndPlaceOrder
@@ -60,7 +60,7 @@ Create or update a CRUD entity model, with API interface, resource model and col
 When updating a model you can add new properties, this will add the getters and setters to the interface and the model
 class.
 
-`./magegen.php make:entity <magepath> [<module> [<entity> [<table> [<id>]]]]`
+`./magegen.php make:entity [<module> [<entity> [<table> [<id>]]]]`
 
 * module - The module name, e.g. MyCompany_MyModule
 * entity - The entity model name
@@ -71,7 +71,7 @@ class.
 
 Creates a repository and search result model with interfaces.
 
-`./magegen.php make:repository <magepath> [<module> [<entity> [<table> [<id>]]]]`
+`./magegen.php make:repository [<module> [<entity> [<table> [<id>]]]]`
 
 * module - The module name, e.g. MyCompany_MyModule
 * entity - The entity model name
@@ -82,7 +82,7 @@ Create or update db_schema.xml.
 
 Will create entity table with primary key constraint, does not overwrite existing tables
 
-`./magegen.php make:schema [<magepath> [<module> [<entity>]]]`
+`./magegen.php make:schema [[<module> [<entity>]]]`
 
 * module - The module name, e.g. MyCompany_MyModule
 * entity - The entity model name
