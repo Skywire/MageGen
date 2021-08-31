@@ -7,4 +7,6 @@
 /public/bundles/
 /var/
 /vendor/
+!.gitkeep
+bin
 ###< symfony/framework-bundle ###

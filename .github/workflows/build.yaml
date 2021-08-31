@@ -1,0 +1,74 @@
+name: Build
+
+on:
+    push:
+        branches: [ main ]
+    pull_request:
+    release:
+        types: [ created ]
+jobs:
+    build-phar:
+        runs-on: ubuntu-latest
+        name: Build PHAR
+
+        steps:
+            -   uses: actions/checkout@v2
+                with:
+                    fetch-depth: 0
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 7.4
+                    ini-values: phar.readonly=0, display_errors=On, error_reporting=-1
+                    tools: composer:v2
+                    coverage: none
+
+            -   name: Get composer cache directory
+                id: composercache
+                run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+            -   name: Cache composer dependencies
+                uses: actions/cache@v2
+                with:
+                    path: ${{ steps.composercache.outputs.dir }}
+                    key: composer-${{ runner.os }}-${{ matrix.php }}-${{ hashFiles('composer.*') }}
+                    restore-keys: |
+                        composer-${{ runner.os }}-${{ matrix.php }}-
+                        composer-${{ runner.os }}-
+                        composer-
+
+            -   name: Install dependencies
+                run: composer install --no-interaction --no-progress --prefer-dist
+
+            -   name: Build PHAR
+                run: |
+                    curl -LSs https://box-project.github.io/box2/installer.php | php 
+                    ./box.phar build
+
+            -   uses: actions/upload-artifact@v1
+                name: Upload the PHAR artifact
+                with:
+                    name: magegen.phar
+                    path: bin/magegen.phar
+    publish-phar:
+        runs-on: ubuntu-latest
+        name: Publish the PHAR
+        needs:
+            - build-phar
+        if: github.event_name == 'release'
+        steps:
+            -   uses: actions/download-artifact@v1
+                with:
+                    name: magegen.phar
+                    path: .
+
+            -   name: Upload magegen.phar
+                uses: actions/upload-release-asset@v1
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                with:
+                    upload_url: ${{ github.event.release.upload_url }}
+                    asset_path: magegen.phar
+                    asset_name: magegen.phar
+                    asset_content_type: application/zip

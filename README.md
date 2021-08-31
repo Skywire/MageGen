@@ -4,11 +4,21 @@ Symfony console based M2 code generation tool.
 
 ## Installation
 
+### Clone the repository
+
 ```
 git clone https://github.com/Skywire/MageGen.git magegen
 cd magegen
 composer install
 chmod +x magegen.php
+```
+
+### Download the phar
+
+```
+curl -o magegen.phar https://github.com/Skywire/MageGen/releases/latest/download/magegen.phar
+chmod +x magegen.phar
+sudo mv magegen.phar /usr/local/bin/magegen    
 ```
 
 ## Usage
