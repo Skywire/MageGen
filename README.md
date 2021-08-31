@@ -65,3 +65,14 @@ Creates a repository and search result model with interfaces.
 
 * module - The module name, e.g. MyCompany_MyModule
 * entity - The entity model name
+
+#### Make Schema
+
+Create or update db_schema.xml.
+
+Will create entity table with primary key constraint, does not overwrite existing tables
+
+`./magegen.php make:schema [<magepath> [<module> [<entity>]]]`
+
+* module - The module name, e.g. MyCompany_MyModule
+* entity - The entity model name

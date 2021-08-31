@@ -131,7 +131,7 @@ class EntityGenerator
 
         $class->addExtend('\Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection');
 
-        $class->addProperty('_idFieldName', $idField . '_entity')->setProtected();
+        $class->addProperty('_idFieldName', $idField)->setProtected();
 
         $class->addMethod('_construct')->setBody(
             sprintf(
