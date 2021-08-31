@@ -36,7 +36,7 @@ class MakeModuleCommand extends AbstractCommand
     protected function configure(): void
     {
         parent::configure();
-        $this->addArgument('namespace', InputArgument::OPTIONAL);
+        $this->addArgument('vendor', InputArgument::OPTIONAL);
         $this->addArgument('module', InputArgument::OPTIONAL);
     }
 
@@ -46,10 +46,10 @@ class MakeModuleCommand extends AbstractCommand
 
         $io = new SymfonyStyle($input, $output);
 
-        $namespace = $input->getArgument('namespace');
-        if (!$namespace) {
-            $namespace = $io->askQuestion(
-                new Question('Namespace')
+        $vendor = $input->getArgument('vendor');
+        if (!$vendor) {
+            $vendor = $io->askQuestion(
+                new Question('Vendor')
             );
         }
         $module = $input->getArgument('module');
@@ -58,20 +58,20 @@ class MakeModuleCommand extends AbstractCommand
         }
 
         $data = [
-            'namespace' => $namespace,
-            'module'    => $module,
+            'vendor' => $vendor,
+            'module' => $module,
         ];
 
         $written   = [];
         $written[] = $writer->writeFile(
-            $namespace,
+            $vendor,
             $module,
             'etc',
             'module.xml',
             $this->twig->render('module/module.xml.twig', $data)
         );
         $written[] = $writer->writeFile(
-            $namespace,
+            $vendor,
             $module,
             '',
             'registration.php',
