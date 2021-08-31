@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MageGen;
 
+use MageGen\Autocomplete\ModuleAutocomplete;
 use MageGen\Generator\DiGenerator;
 use MageGen\Generator\EntityGenerator;
 use MageGen\Helper\ModuleHelper;
@@ -79,14 +80,13 @@ class MakeEntityCommand extends AbstractCommand
         require $input->getArgument('magepath') . '/vendor/autoload.php';
 
         $writer       = $this->getWriter($input);
-        $moduleHelper = new ModuleHelper();
         $io           = new SymfonyStyle($input, $output);
 
         $module = $input->getArgument('module');
         if (!$module) {
             $module = $io->askQuestion(
                 (new Question('Module'))->setAutocompleterValues(
-                    $moduleHelper->getModuleList(
+                    (new ModuleAutocomplete())->getAutocompleteValues(
                         $input->getArgument('magepath')
                     )
                 )
@@ -95,17 +95,8 @@ class MakeEntityCommand extends AbstractCommand
 
         $entity = $input->getArgument('entity');
         if (!$entity) {
-            $entity = $io->askQuestion(new Question('Entity'));
-        }
-
-        $table = $input->getArgument('table');
-        if (!$table) {
-            $table = $io->askQuestion(new Question('Table'));
-        }
-
-        $idField = $input->getArgument('id');
-        if (!$idField) {
-            $idField = $io->askQuestion(new Question('id'));
+            $prefix = sprintf('%s\\Model\\', str_replace('_', '\\', $module));
+            $entity = $io->askQuestion(new Question(sprintf('Entity %s', $prefix)));
         }
 
         $classFqn = implode(
@@ -118,7 +109,7 @@ class MakeEntityCommand extends AbstractCommand
         );
 
         try {
-            $targetClass = ClassType::withBodiesFrom($classFqn);
+            ClassType::withBodiesFrom($classFqn);
             $isAmend     = true;
         } catch (\Throwable $e) {
             $isAmend = false;
@@ -163,6 +154,16 @@ class MakeEntityCommand extends AbstractCommand
             $getter->setBody(sprintf('return $this->getData(%s);', "'$propertyName'"));
             $classWriter->writeMethod($classFqn, (new PsrPrinter())->printMethod($getter));
         } else {
+            $table = $input->getArgument('table');
+            if (!$table) {
+                $table = $io->askQuestion(new Question('Table'));
+            }
+
+            $idField = $input->getArgument('id');
+            if (!$idField) {
+                $idField = $io->askQuestion(new Question('id'));
+            }
+
             [$file, $interfaceFqn] = $this->entityGenerator->createInterface($classFqn);
             $writer->writeFile(
                 $this->nameHelper->getVendor($interfaceFqn),

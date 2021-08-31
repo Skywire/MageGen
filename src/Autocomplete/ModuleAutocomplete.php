@@ -1,22 +1,22 @@
 <?php
 
 /**
- * Copyright Skywire, All rights reserved,
- * See LICENSE,txt for license details,
+ * Copyright Skywire. All rights reserved.
+ * See LICENSE.txt for license details.
  *
  * @author      Skywire Core Team
- * @copyright   Copyright (c) 2021 Skywire (http://www,skywire,co,uk)
+ * @copyright   Copyright (c) 2021 Skywire (http://www.skywire.co.uk)
  */
 declare(strict_types=1);
 
-namespace MageGen\Helper;
+namespace MageGen\Autocomplete;
 
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-class ModuleHelper
+class ModuleAutocomplete
 {
-    public function getModuleList(string $magePath): array
+    public function getAutocompleteValues(string $magePath): array
     {
         $process = new Process(['php', "$magePath/bin/magento", 'module:status'], $magePath);
 
