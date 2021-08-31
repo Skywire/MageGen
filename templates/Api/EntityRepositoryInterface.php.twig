@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ vendor }}\{{ module }}\Api;
+
+use Magento\Framework\Api\SearchCriteriaInterface;
+use {{ interface_fqn }};
+
+interface {{ entity }}RepositoryInterface
+{
+    /**
+     * @param int $id
+     *
+     * @return \{{ interface_fqn }}
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getById($id);
+
+    /**
+     * @param \{{ interface_fqn }} $object
+     *
+     * @return \{{ interface_fqn }}
+     */
+    public function save({{ interface }} $object);
+
+    /**
+     * @param \{{ interface_fqn }} $hamburger
+     *
+     * @return void
+     */
+    public function delete({{ interface }} $hamburger);
+
+    /**
+     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+     *
+     * @return \{{ vendor }}\{{ module }}\Api\Data\{{ entity }}SearchResultInterface
+     */
+    public function getList(SearchCriteriaInterface $searchCriteria);
+}

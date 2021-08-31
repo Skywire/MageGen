@@ -56,3 +56,12 @@ class.
 * entity - The entity model name
 * table - The DB table name
 * id - The DB table primary key
+
+#### Make Repository
+
+Creates a repository and search result model with interfaces.
+
+`./magegen.php make:repository <magepath> [<module> [<entity> [<table> [<id>]]]]`
+
+* module - The module name, e.g. MyCompany_MyModule
+* entity - The entity model name

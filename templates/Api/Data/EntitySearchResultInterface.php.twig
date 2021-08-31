@@ -1,0 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ vendor }}\{{ module }}\Api\Data;
+
+use Magento\Framework\Api\SearchResultsInterface;
+
+interface {{ entity }}SearchResultInterface extends SearchResultsInterface
+{
+    /**
+     * @return \{{ interface_fqn }}[]
+     */
+    public function getItems();
+
+    /**
+     * @param \{{ interface_fqn }}[] $items
+     *
+     * @return void
+     */
+    public function setItems(array $items);
+}

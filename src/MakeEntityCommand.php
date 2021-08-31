@@ -64,7 +64,7 @@ class MakeEntityCommand extends AbstractCommand
     {
         parent::__construct($twig, $name);
 
-        $this->diGenerator     = new DiGenerator();
+        $this->diGenerator     = new DiGenerator($twig);
         $this->entityGenerator = new EntityGenerator();
     }
 
@@ -208,8 +208,15 @@ class MakeEntityCommand extends AbstractCommand
                 $this->nameHelper->getClass($collectionFqn) . '.php',
                 (new PsrPrinter())->printFile($file)
             );
-        }
 
+            $diFilePath = $this->diGenerator->createDiFile(
+                $this->nameHelper->getVendor($classFqn),
+                $this->nameHelper->getModule($classFqn),
+                'global',
+                $writer
+            );
+            $this->diGenerator->addEntityInterfaces($diFilePath, $classFqn, $interfaceFqn);
+        }
 
         return 0;
     }

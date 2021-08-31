@@ -16,15 +16,23 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class ModuleFile extends AbstractWriter
 {
-    public function writeFile(string $vendor, string $module, string $path, string $filename, string $content)
-    {
+    public function writeFile(
+        string $vendor,
+        string $module,
+        string $path,
+        string $filename,
+        string $content,
+        $force = false
+    ) {
         $modulePath = implode('/', [$this->magePath, 'app/code', $vendor, $module]);
 
         $this->createModuleDir($modulePath);
 
         $finalPath = $this->getModuleRelativePath($modulePath, $path, $filename);
 
-        $this->fs->dumpFile($finalPath, $content);
+        if (!$this->fs->exists($finalPath) || $force) {
+            $this->fs->dumpFile($finalPath, $content);
+        }
 
         return $finalPath;
     }

@@ -52,7 +52,7 @@ class MakePluginCommand extends AbstractCommand
     {
         parent::__construct($twig, $name);
 
-        $this->diGenerator = new DiGenerator();
+        $this->diGenerator = new DiGenerator($twig);
     }
 
 
@@ -143,7 +143,7 @@ class MakePluginCommand extends AbstractCommand
             );
         }
 
-        $diFilePath = $this->createDiFile(
+        $diFilePath = $this->diGenerator->createDiFile(
             $this->nameHelper->getVendor($classFqn),
             $this->nameHelper->getModule($classFqn),
             $area,
@@ -153,34 +153,6 @@ class MakePluginCommand extends AbstractCommand
         $this->diGenerator->addPlugin($diFilePath, $subject, $classFqn, $type);
 
         return 0;
-    }
-
-    /**
-     * Create a file if it doesn't exist and return the path
-     *
-     * @param string     $vendor
-     * @param string     $module
-     * @param ModuleFile $writer
-     *
-     * @return string
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     */
-    protected function createDiFile(string $vendor, string $module, string $area, ModuleFile $writer): string
-    {
-        $etcPath = 'etc';
-        if ($area !== 'global') {
-            $etcPath .= '/' . $area;
-        }
-
-        return $writer->writeFile(
-            $vendor,
-            $module,
-            $etcPath,
-            'di.xml',
-            $this->twig->render('module/di.xml.twig')
-        );
     }
 
     /**

@@ -1,0 +1,116 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ vendor }}\{{ module }}\Model;
+
+use Magento\Framework\Api\SearchCriteriaInterface;
+use Magento\Framework\Api\SortOrder;
+use Magento\Framework\Exception\NoSuchEntityException;
+use {{ vendor }}\{{ module }}\Api\{{ entity }}RepositoryInterface;
+use {{ vendor }}\{{ module }}\Api\Data\{{ entity }}Interface as EntityInterface;
+use {{ vendor }}\{{ module }}\Model\ResourceModel\{{ entity }}\Collection as EntityCollection;
+use {{ vendor }}\{{ module }}\Api\Data\{{ entity }}SearchResultInterfaceFactory as SearchResultInterfaceFactory;
+use {{ vendor }}\{{ module }}\Api\Data\{{ entity }}InterfaceFactory as EntityFactory;
+use {{ vendor }}\{{ module }}\Model\ResourceModel\{{ entity }}\CollectionFactory as EntityCollectionFactory;
+
+class {{ entity }}Repository implements {{ entity }}RepositoryInterface
+{
+    /**
+     * @var EntityFactory
+     */
+    private $entityFactory;
+
+    /**
+     * @var EntityCollectionFactory
+     */
+    private $entityCollectionFactory;
+
+    /**
+     * @var SearchResultInterfaceFactory
+     */
+    private $searchResultFactory;
+
+    public function __construct(
+        EntityFactory $entityFactory,
+        EntityCollectionFactory $entityCollectionFactory,
+        SearchResultInterfaceFactory $searchResultInterfaceFactory
+    ) {
+        $this->entityFactory           = $entityFactory;
+        $this->entityCollectionFactory = $entityCollectionFactory;
+        $this->searchResultFactory     = $searchResultInterfaceFactory;
+    }
+
+    public function getById($id)
+    {
+        $object = $this->entityFactory->create();
+        $object->getResource()->load($object, $id);
+        if (!$object->getId()) {
+            throw new NoSuchEntityException(__('Unable to find object with ID "%1"', $id));
+        }
+
+        return $object;
+    }
+
+    public function save(EntityInterface $object)
+    {
+        $object->getResource()->save($object);
+
+        return $object;
+    }
+
+    public function delete(EntityInterface $object)
+    {
+        $object->getResource()->delete($object);
+    }
+
+    public function getList(SearchCriteriaInterface $searchCriteria)
+    {
+        $collection = $this->entityCollectionFactory->create();
+
+        $this->addFiltersToCollection($searchCriteria, $collection);
+        $this->addSortOrdersToCollection($searchCriteria, $collection);
+        $this->addPagingToCollection($searchCriteria, $collection);
+
+        $collection->load();
+
+        return $this->buildSearchResult($searchCriteria, $collection);
+    }
+
+    private function addFiltersToCollection(SearchCriteriaInterface $searchCriteria, EntityCollection $collection)
+    {
+        foreach ($searchCriteria->getFilterGroups() as $filterGroup) {
+            $fields = $conditions = [];
+            foreach ($filterGroup->getFilters() as $filter) {
+                $fields[]     = $filter->getField();
+                $conditions[] = [$filter->getConditionType() => $filter->getValue()];
+            }
+            $collection->addFieldToFilter($fields, $conditions);
+        }
+    }
+
+    private function addSortOrdersToCollection(SearchCriteriaInterface $searchCriteria, EntityCollection $collection)
+    {
+        foreach ((array)$searchCriteria->getSortOrders() as $sortOrder) {
+            $direction = $sortOrder->getDirection() == SortOrder::SORT_ASC ? 'asc' : 'desc';
+            $collection->addOrder($sortOrder->getField(), $direction);
+        }
+    }
+
+    private function addPagingToCollection(SearchCriteriaInterface $searchCriteria, EntityCollection $collection)
+    {
+        $collection->setPageSize($searchCriteria->getPageSize());
+        $collection->setCurPage($searchCriteria->getCurrentPage());
+    }
+
+    private function buildSearchResult(SearchCriteriaInterface $searchCriteria, EntityCollection $collection)
+    {
+        $searchResults = $this->searchResultFactory->create();
+
+        $searchResults->setSearchCriteria($searchCriteria);
+        $searchResults->setItems($collection->getItems());
+        $searchResults->setTotalCount($collection->getSize());
+
+        return $searchResults;
+    }
+}
