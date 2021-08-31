@@ -30,10 +30,7 @@ class ClassFile extends AbstractWriter
         if (!empty($methods)) {
             $lastMethod       = array_pop($methods);
             $reflectionMethod = new \ReflectionMethod($classFqn, $lastMethod->getName());
-            $endLine          = $reflectionMethod->getEndLine();
-            if($reflectionMethod->isAbstract()) {
-                $endLine -= 1;
-            }
+            $endLine          = $reflectionMethod->getEndLine() - 1;
         } else {
             $endLine = $reflectionClass->getEndLine() - 2;
         }

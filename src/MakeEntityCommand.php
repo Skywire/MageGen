@@ -32,6 +32,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Twig\Environment;
@@ -129,17 +130,15 @@ class MakeEntityCommand extends AbstractCommand
             $io->title('Class exists, adding new properties');
 
             $propertyName = $io->askQuestion(new Question('Property'));
-            $propertyType = $io->askQuestion(new Question('type', 'string'));
-
-            $newProperty = (new Property($propertyName))->setType($propertyType)->setProtected();
-            $classWriter->writeProperty($classFqn, (new PropertyPrinter())->printProperty($newProperty));
+            $propertyType = $io->askQuestion(new Question('Type', 'string'));
+            $propertyNullable = $io->askQuestion((new ChoiceQuestion('Nullable', ['y','n'], 'n'))) === 'y';
 
             $getter = new Method("get" . ucfirst($propertyName));
             $getter->setPublic();
 
             $setter = new Method("set" . ucfirst($propertyName));
             $setter->setPublic();
-            $setter->addParameter($propertyName)->setType($propertyType);
+            $setter->addParameter($propertyName)->setType($propertyType)->setNullable($propertyNullable);
 
             // Add getter / setter to interface
             try {
@@ -147,8 +146,10 @@ class MakeEntityCommand extends AbstractCommand
                 ClassType::withBodiesFrom($interfaceFqn);
 
                 $setter->setBody(null);
+                $setter->setReturnType('\\' . $interfaceFqn);
                 $classWriter->writeMethod($interfaceFqn, (new PsrPrinter())->printMethod($setter));
                 $getter->setBody(null);
+                $getter->setReturnType($propertyType)->setReturnNullable($propertyNullable);
                 $classWriter->writeMethod($interfaceFqn, (new PsrPrinter())->printMethod($getter));
             } catch (\Throwable $e) {
                 // interface is optional
