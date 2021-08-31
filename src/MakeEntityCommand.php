@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MageGen;
 
+use MageGen\Autocomplete\EntityAutocomplete;
 use MageGen\Autocomplete\ModuleAutocomplete;
 use MageGen\Generator\DiGenerator;
 use MageGen\Generator\EntityGenerator;
@@ -79,8 +80,8 @@ class MakeEntityCommand extends AbstractCommand
     {
         require $input->getArgument('magepath') . '/vendor/autoload.php';
 
-        $writer       = $this->getWriter($input);
-        $io           = new SymfonyStyle($input, $output);
+        $writer = $this->getWriter($input);
+        $io     = new SymfonyStyle($input, $output);
 
         $module = $input->getArgument('module');
         if (!$module) {
@@ -96,7 +97,14 @@ class MakeEntityCommand extends AbstractCommand
         $entity = $input->getArgument('entity');
         if (!$entity) {
             $prefix = sprintf('%s\\Model\\', str_replace('_', '\\', $module));
-            $entity = $io->askQuestion(new Question(sprintf('Entity %s', $prefix)));
+            $entity = $io->askQuestion(
+                (new Question(sprintf('Entity %s', $prefix)))->setAutocompleterValues(
+                    (new EntityAutocomplete())->getAutocompleteValues(
+                        $input->getArgument('magepath'),
+                        $module
+                    )
+                )
+            );
         }
 
         $classFqn = implode(
@@ -110,7 +118,7 @@ class MakeEntityCommand extends AbstractCommand
 
         try {
             ClassType::withBodiesFrom($classFqn);
-            $isAmend     = true;
+            $isAmend = true;
         } catch (\Throwable $e) {
             $isAmend = false;
         }
