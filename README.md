@@ -33,7 +33,7 @@ Run from inside a Magento 2 project directory.
 
 Create a new Magento module with registration and etc/module.xml files
 
-`./magegen.php make:module [<namespace> [<module>]]`
+`magegen make:module [<namespace> [<module>]]`
 
 * vendor - The vendor namespace e.g MyCompanyName
 * module - The module name, e.g MyModuleName
@@ -44,7 +44,7 @@ Create or update a plugin class.
 
 You can update an existing plugin to add new methods.
 
-`./magegen.php make:plugin [<subject> [<method> [<class> [<type> [<area>]]]]]`
+`magegen make:plugin [<subject> [<method> [<class> [<type> [<area>]]]]]`
 
 * subject - The plugin subject class or interface, e.g \Magento\Checkout\Api\PaymentInformationManagementInterface
 * method - The plugin subject method e.g. savePaymentInformationAndPlaceOrder
@@ -60,7 +60,7 @@ Create or update a CRUD entity model, with API interface, resource model and col
 When updating a model you can add new properties, this will add the getters and setters to the interface and the model
 class.
 
-`./magegen.php make:entity [<module> [<entity> [<table> [<id>]]]]`
+`magegen make:entity [<module> [<entity> [<table> [<id>]]]]`
 
 * module - The module name, e.g. MyCompany_MyModule
 * entity - The entity model name
@@ -71,7 +71,7 @@ class.
 
 Creates a repository and search result model with interfaces.
 
-`./magegen.php make:repository [<module> [<entity> [<table> [<id>]]]]`
+`magegen make:repository [<module> [<entity> [<table> [<id>]]]]`
 
 * module - The module name, e.g. MyCompany_MyModule
 * entity - The entity model name
@@ -82,7 +82,7 @@ Create or update db_schema.xml.
 
 Will create entity table with primary key constraint, does not overwrite existing tables
 
-`./magegen.php make:schema [[<module> [<entity>]]]`
+`magegen make:schema [[<module> [<entity>]]]`
 
 * module - The module name, e.g. MyCompany_MyModule
 * entity - The entity model name
