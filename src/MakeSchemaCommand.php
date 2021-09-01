@@ -16,6 +16,7 @@ use MageGen\Autocomplete\ModuleAutocomplete;
 use MageGen\Generator\SchemaGenerator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -48,6 +49,7 @@ class MakeSchemaCommand extends AbstractCommand
     protected function configure(): void
     {
         parent::configure();
+        $this->addOption('magepath', 'm', InputOption::VALUE_REQUIRED, 'Path to Magento installation', getcwd());
         $this->addArgument('module', InputArgument::OPTIONAL, 'Module name');
         $this->addArgument('entity', InputArgument::OPTIONAL, 'Entity name');
     }

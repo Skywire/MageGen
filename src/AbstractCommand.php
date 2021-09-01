@@ -52,11 +52,6 @@ abstract class AbstractCommand extends Command
         $this->methodGenerator = new MethodGenerator();
     }
 
-    protected function configure(): void
-    {
-        $this->addOption('magepath', '-m', InputOption::VALUE_REQUIRED, 'Path to Magento installation', getcwd());
-    }
-
     protected function getWriter(InputInterface $input)
     {
         return new ModuleFile($input->getOption('magepath'));

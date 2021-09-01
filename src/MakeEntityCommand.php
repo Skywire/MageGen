@@ -21,6 +21,7 @@ use Nette\PhpGenerator\Method;
 use Nette\PhpGenerator\PsrPrinter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
@@ -61,6 +62,7 @@ class MakeEntityCommand extends AbstractCommand
     protected function configure(): void
     {
         parent::configure();
+        $this->addOption('magepath', 'm', InputOption::VALUE_REQUIRED, 'Path to Magento installation', getcwd());
         $this->addArgument('module', InputArgument::OPTIONAL, 'Module name');
         $this->addArgument('entity', InputArgument::OPTIONAL, 'Entity name');
         $this->addArgument('table', InputArgument::OPTIONAL, 'DB table name');
