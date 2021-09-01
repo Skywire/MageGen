@@ -13,6 +13,7 @@ namespace MageGen;
 
 use MageGen\Autocomplete\ModuleAutocomplete;
 use MageGen\Generator\DiGenerator;
+use MageGen\Generator\MethodGenerator;
 use MageGen\Writer\ClassFile;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Method;
@@ -45,13 +46,18 @@ class MakePluginCommand extends AbstractCommand
      */
     protected $diGenerator;
 
+    /**
+     * @var MethodGenerator
+     */
+    protected $methodGenerator;
+
     public function __construct(Environment $twig, string $name = null)
     {
         parent::__construct($twig, $name);
 
-        $this->diGenerator = new DiGenerator($twig);
+        $this->diGenerator     = new DiGenerator($twig);
+        $this->methodGenerator = new MethodGenerator();
     }
-
 
     protected function configure(): void
     {
