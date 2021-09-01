@@ -25,5 +25,6 @@ $application->add(new \MageGen\MakePluginCommand($twig));
 $application->add(new \MageGen\MakeEntityCommand($twig));
 $application->add(new \MageGen\MakeRepositoryCommand($twig));
 $application->add(new \MageGen\MakeSchemaCommand($twig));
+$application->add(new \MageGen\MakeExtensionAttributeCommand($twig));
 
 $application->run();

@@ -86,3 +86,16 @@ Will create entity table with primary key constraint, does not overwrite existin
 
 * module - The module name, e.g. MyCompany_MyModule
 * entity - The entity model name
+
+#### Make Extension Attribute
+
+Create or update extension_attributes.xml.
+
+Will create the file and add extension attributes
+
+`magegen make:extension-attribute [<module> [<for> [<attribute_code> [<attribute_type>]]]]`
+
+* module - The module name, e.g. MyCompany_MyModule
+* for - The target class or interface
+* attribute_code - The extension attribute code
+* attribute_type - The extension attribute type (Scalar, interface or class)
