@@ -60,16 +60,7 @@ class MakeDataPatchCommand extends AbstractCommand
 
         $io = new SymfonyStyle($input, $output);
 
-        $module = $input->getArgument('module');
-        if (!$module) {
-            $module = $io->askQuestion(
-                (new Question('Module'))->setAutocompleterValues(
-                    (new ModuleAutocomplete())->getAutocompleteValues(
-                        $input->getOption('magepath')
-                    )
-                )
-            );
-        }
+        $module = $this->getModuleAnswer($input, $io);
 
         $patchName = $input->getArgument('patch_name');
         if (!$patchName) {

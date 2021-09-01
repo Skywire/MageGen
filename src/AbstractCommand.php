@@ -11,10 +11,12 @@ declare(strict_types=1);
 
 namespace MageGen;
 
+use MageGen\Autocomplete\ModuleAutocomplete;
 use MageGen\Helper\NameHelper;
 use MageGen\Writer\ModuleFile;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Question\Question;
 use Twig\Environment;
 
 /**
@@ -42,5 +44,21 @@ abstract class AbstractCommand extends Command
     protected function getWriter(InputInterface $input)
     {
         return new ModuleFile($input->getOption('magepath'));
+    }
+
+    protected function getModuleAnswer(InputInterface $input, $io)
+    {
+        $module = $input->getArgument('module');
+        if (!$module) {
+            $module = $io->askQuestion(
+                (new Question('Module'))->setAutocompleterValues(
+                    (new ModuleAutocomplete($input->getOption('magepath')))->getAutocompleteValues(
+                        $input->getOption('magepath')
+                    )
+                )
+            );
+        }
+
+        return $module;
     }
 }

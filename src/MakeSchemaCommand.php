@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace MageGen;
 
 use MageGen\Autocomplete\EntityAutocomplete;
-use MageGen\Autocomplete\ModuleAutocomplete;
 use MageGen\Generator\SchemaGenerator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,12 +26,12 @@ use Twig\Environment;
  */
 class MakeSchemaCommand extends AbstractCommand
 {
+    protected static $defaultName = 'make:schema';
+
     /**
      * @var Environment
      */
     protected $twig;
-
-    protected static $defaultName = 'make:schema';
 
     /**
      * @var SchemaGenerator
@@ -60,23 +59,14 @@ class MakeSchemaCommand extends AbstractCommand
 
         $io = new SymfonyStyle($input, $output);
 
-        $module = $input->getArgument('module');
-        if (!$module) {
-            $module = $io->askQuestion(
-                (new Question('Module'))->setAutocompleterValues(
-                    (new ModuleAutocomplete())->getAutocompleteValues(
-                        $input->getOption('magepath')
-                    )
-                )
-            );
-        }
+        $module = $this->getModuleAnswer($input, $io);
 
         $entity = $input->getArgument('entity');
         if (!$entity) {
             $prefix = sprintf('%s\\Model\\', str_replace('_', '\\', $module));
             $entity = $io->askQuestion(
                 (new Question(sprintf('Entity %s', $prefix)))->setAutocompleterValues(
-                    (new EntityAutocomplete())->getAutocompleteValues(
+                    (new EntityAutocomplete($input->getOption('magepath'), $module))->getAutocompleteValues(
                         $input->getOption('magepath'),
                         $module
                     )

@@ -80,7 +80,7 @@ class MakeEntityCommand extends AbstractCommand
         if (!$module) {
             $module = $io->askQuestion(
                 (new Question('Module'))->setAutocompleterValues(
-                    (new ModuleAutocomplete())->getAutocompleteValues(
+                    (new ModuleAutocomplete($input->getOption('magepath')))->getAutocompleteValues(
                         $input->getOption('magepath')
                     )
                 )
@@ -92,7 +92,7 @@ class MakeEntityCommand extends AbstractCommand
             $prefix = sprintf('%s\\Model\\', str_replace('_', '\\', $module));
             $entity = $io->askQuestion(
                 (new Question(sprintf('Entity %s', $prefix)))->setAutocompleterValues(
-                    (new EntityAutocomplete())->getAutocompleteValues(
+                    (new EntityAutocomplete($input->getOption('magepath'), $module))->getAutocompleteValues(
                         $input->getOption('magepath'),
                         $module
                     )

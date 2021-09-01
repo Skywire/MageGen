@@ -14,11 +14,11 @@ namespace MageGen\Autocomplete;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-class ModuleAutocomplete
+class ModuleAutocomplete extends AbstractAutocomplete
 {
-    public function getAutocompleteValues(string $magePath): array
+    public function getAutocompleteValues(): array
     {
-        $process = new Process(['php', "$magePath/bin/magento", 'module:status'], $magePath);
+        $process = new Process(['php', "{$this->magePath}/bin/magento", 'module:status'], $this->magePath);
 
         $process->run();
 
