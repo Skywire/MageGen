@@ -66,7 +66,7 @@ class MakeSchemaCommand extends AbstractCommand
     protected function configure(): void
     {
         parent::configure();
-        $this->addArgument('module', InputArgument::OPTIONAL, 'Plugin subject / target');
+        $this->addArgument('module', InputArgument::OPTIONAL, 'Module name');
         $this->addArgument('entity', InputArgument::OPTIONAL, 'Entity name');
     }
 

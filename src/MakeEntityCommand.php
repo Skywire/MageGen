@@ -71,7 +71,7 @@ class MakeEntityCommand extends AbstractCommand
     protected function configure(): void
     {
         parent::configure();
-        $this->addArgument('module', InputArgument::OPTIONAL, 'Plugin subject / target');
+        $this->addArgument('module', InputArgument::OPTIONAL, 'Module name');
         $this->addArgument('entity', InputArgument::OPTIONAL, 'Entity name');
         $this->addArgument('table', InputArgument::OPTIONAL, 'DB table name');
         $this->addArgument('id', InputArgument::OPTIONAL, 'DB ID field name');
