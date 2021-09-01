@@ -14,7 +14,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Symfony\Component\Console\Application;
 
-$application = new Application();
+$application = new Application('MageGen');
 
 
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/templates');
