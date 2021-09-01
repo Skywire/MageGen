@@ -44,12 +44,12 @@ Create or update a plugin class.
 
 You can update an existing plugin to add new methods.
 
-`magegen make:plugin [<subject> [<method> [<class> [<type> [<area>]]]]]`
+`magegen make:plugin [<module> [<subject> [<method> [<class> [<type> [<area>]]]]]]`
 
+* module - The module name, e.g. MyCompany_MyModule
 * subject - The plugin subject class or interface, e.g \Magento\Checkout\Api\PaymentInformationManagementInterface
 * method - The plugin subject method e.g. savePaymentInformationAndPlaceOrder
-* class - The fully qualified class name for your plugin class, e.g.
-  \MyCompany\MyModule\Plugin\Model\PaymentInformationPlugin
+* class - The class path and name relative to modules Plugin directory, e.g Model\PaymentInformationPlugin
 * type - The plugin type, before, around, after.
 * area - The plugin area, global, frontend, adminhtml, etc.
 

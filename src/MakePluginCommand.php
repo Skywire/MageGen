@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace MageGen;
 
+use MageGen\Autocomplete\ModuleAutocomplete;
 use MageGen\Generator\DiGenerator;
 use MageGen\Writer\ClassFile;
 use Nette\PhpGenerator\ClassType;
@@ -54,9 +55,10 @@ class MakePluginCommand extends AbstractCommand
     protected function configure(): void
     {
         parent::configure();
+        $this->addArgument('module', InputArgument::OPTIONAL, 'Module name');
         $this->addArgument('subject', InputArgument::OPTIONAL, 'Plugin subject / target');
         $this->addArgument('method', InputArgument::OPTIONAL, 'Subject method');
-        $this->addArgument('class', InputArgument::OPTIONAL, 'Plugin class name');
+        $this->addArgument('class', InputArgument::OPTIONAL, 'Plugin class name relative to module Plugin/');
         $this->addArgument('type', InputArgument::OPTIONAL, "before, around, after");
         $this->addArgument(
             'area',
@@ -74,6 +76,17 @@ class MakePluginCommand extends AbstractCommand
 
         $io = new SymfonyStyle($input, $output);
 
+        $module = $input->getArgument('module');
+        if (!$module) {
+            $module = $io->askQuestion(
+                (new Question('Module'))->setAutocompleterValues(
+                    (new ModuleAutocomplete())->getAutocompleteValues(
+                        $input->getOption('magepath')
+                    )
+                )
+            );
+        }
+
         $subject = $input->getArgument('subject');
         if (!$subject) {
             $subject = $io->askQuestion(
@@ -86,10 +99,19 @@ class MakePluginCommand extends AbstractCommand
                 new Question('method')
             );
         }
-        $classFqn = $input->getArgument('class');
-        if (!$classFqn) {
-            $classFqn = $io->askQuestion(new Question('Class'));
+        $className = $input->getArgument('class');
+        if (!$className) {
+            $className = $io->askQuestion(new Question('Class'));
         }
+
+        $classFqn = implode(
+            '\\',
+            [
+                str_replace('_', '\\', $module),
+                'Plugin',
+                $className,
+            ]
+        );
 
         $type = $input->getArgument('type');
         if (!$type) {
