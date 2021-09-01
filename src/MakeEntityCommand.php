@@ -15,20 +15,10 @@ use MageGen\Autocomplete\EntityAutocomplete;
 use MageGen\Autocomplete\ModuleAutocomplete;
 use MageGen\Generator\DiGenerator;
 use MageGen\Generator\EntityGenerator;
-use MageGen\Helper\ModuleHelper;
-use MageGen\Printer\PropertyPrinter;
-use MageGen\Writer\AbstractWriter;
 use MageGen\Writer\ClassFile;
-use MageGen\Writer\ModuleFile;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\Method;
-use Nette\PhpGenerator\Parameter;
-use Nette\PhpGenerator\PhpFile;
-use Nette\PhpGenerator\PhpNamespace;
-use Nette\PhpGenerator\Property;
 use Nette\PhpGenerator\PsrPrinter;
-use Nette\PhpGenerator\Traits\NameAware;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -130,7 +120,7 @@ class MakeEntityCommand extends AbstractCommand
             $io->title('Class exists, adding new properties');
 
             while (true) {
-                $propertyName     = $io->askQuestion(new Question('Property'));
+                $propertyName = $io->askQuestion(new Question('Property'));
                 if (!$propertyName) {
                     break;
                 }
@@ -161,7 +151,7 @@ class MakeEntityCommand extends AbstractCommand
                 }
 
                 // Add getter / setter to class
-               $setter->setBody(sprintf('return $this->setData(%s, $%s);', "'$propertyName'", $propertyName));
+                $setter->setBody(sprintf('return $this->setData(%s, $%s);', "'$propertyName'", $propertyName));
                 $classWriter->writeMethod($classFqn, (new PsrPrinter())->printMethod($setter));
 
                 $getter->setBody(sprintf('return $this->getData(%s);', "'$propertyName'"));

@@ -11,17 +11,13 @@ declare(strict_types=1);
 
 namespace MageGen;
 
-
 use MageGen\Generator\MethodGenerator;
-use MageGen\Helper\MethodHelper;
 use MageGen\Helper\NameHelper;
 use MageGen\Writer\ModuleFile;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Twig\Environment;
-
 
 /**
  * @method string getCommandDescription()
@@ -51,8 +47,8 @@ abstract class AbstractCommand extends Command
     public function __construct(Environment $twig, string $name = null)
     {
         parent::__construct($name);
-        $this->twig         = $twig;
-        $this->nameHelper   = new NameHelper();
+        $this->twig            = $twig;
+        $this->nameHelper      = new NameHelper();
         $this->methodGenerator = new MethodGenerator();
     }
 

@@ -15,28 +15,12 @@ use MageGen\Autocomplete\EntityAutocomplete;
 use MageGen\Autocomplete\ModuleAutocomplete;
 use MageGen\Generator\DiGenerator;
 use MageGen\Generator\EntityGenerator;
-use MageGen\Helper\ModuleHelper;
-use MageGen\Printer\PropertyPrinter;
-use MageGen\Writer\AbstractWriter;
-use MageGen\Writer\ClassFile;
-use MageGen\Writer\ModuleFile;
-use Nette\PhpGenerator\ClassType;
-use Nette\PhpGenerator\Method;
-use Nette\PhpGenerator\Parameter;
-use Nette\PhpGenerator\PhpFile;
-use Nette\PhpGenerator\PhpNamespace;
-use Nette\PhpGenerator\Property;
-use Nette\PhpGenerator\PsrPrinter;
-use Nette\PhpGenerator\Traits\NameAware;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Twig\Environment;
-
 
 /**
  * @method string getCommandDescription()
