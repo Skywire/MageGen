@@ -129,39 +129,44 @@ class MakeEntityCommand extends AbstractCommand
 
             $io->title('Class exists, adding new properties');
 
-            $propertyName = $io->askQuestion(new Question('Property'));
-            $propertyType = $io->askQuestion(new Question('Type', 'string'));
-            $propertyNullable = $io->askQuestion((new ChoiceQuestion('Nullable', ['y','n'], 'n'))) === 'y';
+            while (true) {
+                $propertyName     = $io->askQuestion(new Question('Property'));
+                if (!$propertyName) {
+                    break;
+                }
+                $propertyType     = $io->askQuestion(new Question('Type', 'string'));
+                $propertyNullable = $io->askQuestion((new ChoiceQuestion('Nullable', ['y', 'n'], 'n'))) === 'y';
 
-            $getter = new Method("get" . ucfirst($propertyName));
-            $getter->setPublic();
+                $getter = new Method("get" . ucfirst($propertyName));
+                $getter->setPublic();
 
-            $setter = new Method("set" . ucfirst($propertyName));
-            $setter->setPublic();
-            $setter->addParameter($propertyName)->setType($propertyType)->setNullable($propertyNullable);
+                $setter = new Method("set" . ucfirst($propertyName));
+                $setter->setPublic();
+                $setter->addParameter($propertyName)->setType($propertyType)->setNullable($propertyNullable);
 
-            // Add getter / setter to interface
-            try {
-                $interfaceFqn = $this->entityGenerator->entityFqnToInterfaceFqn($classFqn);
-                ClassType::withBodiesFrom($interfaceFqn);
+                // Add getter / setter to interface
+                try {
+                    $interfaceFqn = $this->entityGenerator->entityFqnToInterfaceFqn($classFqn);
+                    ClassType::withBodiesFrom($interfaceFqn);
 
-                $setter->setBody(null);
-                $setter->setReturnType('\\' . $interfaceFqn);
-                $classWriter->writeMethod($interfaceFqn, (new PsrPrinter())->printMethod($setter));
-                $getter->setBody(null);
-                $getter->setReturnType($propertyType)->setReturnNullable($propertyNullable);
-                $classWriter->writeMethod($interfaceFqn, (new PsrPrinter())->printMethod($getter));
-            } catch (\Throwable $e) {
-                // interface is optional
-                throw $e;
+                    $setter->setBody(null);
+                    $setter->setReturnType('\\' . $interfaceFqn);
+                    $classWriter->writeMethod($interfaceFqn, (new PsrPrinter())->printMethod($setter));
+                    $getter->setBody(null);
+                    $getter->setReturnType($propertyType)->setReturnNullable($propertyNullable);
+                    $classWriter->writeMethod($interfaceFqn, (new PsrPrinter())->printMethod($getter));
+                } catch (\Throwable $e) {
+                    // interface is optional
+                    throw $e;
+                }
+
+                // Add getter / setter to class
+               $setter->setBody(sprintf('return $this->setData(%s, $%s);', "'$propertyName'", $propertyName));
+                $classWriter->writeMethod($classFqn, (new PsrPrinter())->printMethod($setter));
+
+                $getter->setBody(sprintf('return $this->getData(%s);', "'$propertyName'"));
+                $classWriter->writeMethod($classFqn, (new PsrPrinter())->printMethod($getter));
             }
-
-            // Add getter / setter to class
-            $setter->setBody(sprintf('return $this->setData(%s, $%s);', "'$propertyName'", $propertyName));
-            $classWriter->writeMethod($classFqn, (new PsrPrinter())->printMethod($setter));
-
-            $getter->setBody(sprintf('return $this->getData(%s);', "'$propertyName'"));
-            $classWriter->writeMethod($classFqn, (new PsrPrinter())->printMethod($getter));
         } else {
             $table = $input->getArgument('table');
             if (!$table) {

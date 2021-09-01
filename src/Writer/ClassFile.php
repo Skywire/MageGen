@@ -16,6 +16,8 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class ClassFile extends AbstractWriter
 {
+    protected $methodLineCache = [];
+
     public function writeMethod(
         string $classFqn,
         string $content
@@ -27,19 +29,38 @@ class ClassFile extends AbstractWriter
 
         $file = new \SplFileObject($finalPath, 'ra+');
 
-        if (!empty($methods)) {
-            $lastMethod       = array_pop($methods);
-            $reflectionMethod = new \ReflectionMethod($classFqn, $lastMethod->getName());
-            $endLine          = $reflectionMethod->getEndLine() - 1;
-        } else {
-            $endLine = $reflectionClass->getEndLine() - 2;
-        }
+        $newMethodLine = $this->getNewMethodLine($reflectionClass, $methods);
 
-        $file->seek($endLine);
+        $file->seek($newMethodLine);
         $position = $file->ftell();
         $file     = null;
 
         $this->injectData($finalPath, "\t" . $content, $position);
+        $this->incrementLastMethodLine($reflectionClass, mb_substr_count($content, "\n"));
+    }
+
+    protected function getNewMethodLine(\ReflectionClass $class, array $methods)
+    {
+        if (!array_key_exists($class->getName(), $this->methodLineCache)) {
+            if (!empty($methods)) {
+                $lastMethod       = array_pop($methods);
+                $reflectionMethod = new \ReflectionMethod($class->getName(), $lastMethod->getName());
+                $endLine          = $reflectionMethod->getEndLine() - 1;
+            } else {
+                $endLine = $class->getEndLine() - 2;
+            }
+
+            $this->methodLineCache[$class->getName()] = $endLine;
+        }
+
+        return $this->methodLineCache[$class->getName()];
+    }
+
+    protected function incrementLastMethodLine(\ReflectionClass $class, int $linesAdded): void
+    {
+        if (array_key_exists($class->getName(), $this->methodLineCache)) {
+            $this->methodLineCache[$class->getName()] += $linesAdded;
+        }
     }
 
     protected function getClassMethods(\ReflectionClass $class): array
@@ -52,31 +73,31 @@ class ClassFile extends AbstractWriter
         );
     }
 
-    public function writeProperty(
-        string $classFqn,
-        string $content
-    ) {
-        $finalPath = $this->fqnToPath($classFqn);
-
-        $reflectionClass = new \ReflectionClass($classFqn);
-        $methods         = $this->getClassMethods($reflectionClass);
-
-        if (!empty($methods)) {
-            $firstMethod      = array_shift($methods);
-            $reflectionMethod = new \ReflectionMethod($classFqn, $firstMethod->getName());
-
-            $startLine = $reflectionMethod->getStartLine() - 3;
-        } else {
-            $startLine = $reflectionClass->getEndLine() - 2;
-        }
-
-        $file = new \SplFileObject($finalPath, 'ra+');
-        $file->seek($startLine);
-        $position = $file->ftell();
-        $file     = null;
-
-        $this->injectData($finalPath, "\t" . $content, $position);
-    }
+//    public function writeProperty(
+//        string $classFqn,
+//        string $content
+//    ) {
+//        $finalPath = $this->fqnToPath($classFqn);
+//
+//        $reflectionClass = new \ReflectionClass($classFqn);
+//        $methods         = $this->getClassMethods($reflectionClass);
+//
+//        if (!empty($methods)) {
+//            $firstMethod      = array_shift($methods);
+//            $reflectionMethod = new \ReflectionMethod($classFqn, $firstMethod->getName());
+//
+//            $startLine = $reflectionMethod->getStartLine() - 3;
+//        } else {
+//            $startLine = $reflectionClass->getEndLine() - 2;
+//        }
+//
+//        $file = new \SplFileObject($finalPath, 'ra+');
+//        $file->seek($startLine);
+//        $position = $file->ftell();
+//        $file     = null;
+//
+//        $this->injectData($finalPath, "\t" . $content, $position);
+//    }
 
     protected function fqnToPath(string $classFqn)
     {
