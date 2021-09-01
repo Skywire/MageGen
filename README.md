@@ -113,6 +113,7 @@ Create the acl.xml file with a store config resource.
 Create a schema or data patch class.
 
 `magegen make:schema-patch [<module> [<patch_name>]]`
+
 `magegen make:data-patch [<module> [<patch_name>]]`
 
 * module - The module name, e.g. MyCompany_MyModule
