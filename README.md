@@ -107,3 +107,13 @@ Create the acl.xml file with a store config resource.
 `magegen make:acl [<module>]`
 
 * module - The module name, e.g. MyCompany_MyModule
+
+#### Make Schema and Data Patches
+
+Create a schema or data patch class.
+
+`magegen make:schema-patch [<module> [<patch_name>]]`
+`magegen make:data-patch [<module> [<patch_name>]]`
+
+* module - The module name, e.g. MyCompany_MyModule
+* patch_name - The patch class name without namespace, e.g. MyPatch

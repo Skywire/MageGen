@@ -1,0 +1,42 @@
+<?php
+declare(strict_types=1);
+
+namespace {{ vendor }}\{{ module }}\Setup\Patch\Data;
+
+use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Magento\Framework\Setup\Patch\DataPatchInterface;
+
+class {{ patch_name }} implements DataPatchInterface
+{
+    /**
+     * @var ModuleDataSetupInterface
+     */
+    private $moduleDataSetup;
+
+    /**
+     * @param ModuleDataSetupInterface $moduleDataSetup
+     */
+    public function __construct(ModuleDataSetupInterface $moduleDataSetup)
+    {
+        $this->moduleDataSetup = $moduleDataSetup;
+    }
+
+    public static function getDependencies()
+    {
+        return [];
+    }
+
+    public function getAliases()
+    {
+        return [];
+    }
+
+    public function apply()
+    {
+        $this->moduleDataSetup->getConnection()->startSetup();
+
+        // TODO Add patch code
+
+        $this->moduleDataSetup->getConnection()->endSetup();
+    }
+}

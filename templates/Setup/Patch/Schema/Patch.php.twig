@@ -1,0 +1,42 @@
+<?php
+declare(strict_types=1);
+
+namespace {{ vendor }}\{{ module }}\Setup\Patch\Schema;
+
+use Magento\Framework\Setup\Patch\SchemaPatchInterface;
+use Magento\Framework\Setup\SchemaSetupInterface;
+
+class {{ patch_name }} implements SchemaPatchInterface
+{
+    /**
+     * @var SchemaSetupInterface
+     */
+    private $setup;
+
+    /**
+     * @param SchemaSetupInterface $setup
+     */
+    public function __construct(SchemaSetupInterface $setup)
+    {
+        $this->setup = $setup;
+    }
+
+    public static function getDependencies()
+    {
+        return [];
+    }
+
+    public function getAliases()
+    {
+        return [];
+    }
+
+    public function apply()
+    {
+        $this->setup->startSetup();
+
+        // TODO Add patch code
+
+        $this->setup->endSetup();
+    }
+}
