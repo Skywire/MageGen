@@ -99,3 +99,11 @@ Will create the file and add extension attributes
 * for - The target class or interface
 * attribute_code - The extension attribute code
 * attribute_type - The extension attribute type (Scalar, interface or class)
+
+#### Make ACL
+
+Create the acl.xml file with a store config resource.
+
+`magegen make:acl [<module>]`
+
+* module - The module name, e.g. MyCompany_MyModule
